@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UseWPF>true</UseWPF>
+	<LangVersion>10</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Assets\images\focus.png" />
+    <None Remove="Assets\images\hole.png" />
+    <None Remove="Assets\images\mole1.png" />
+    <None Remove="Assets\images\mole2.png" />
+    <None Remove="Assets\images\shot.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\images\mole2.png" />
+    <Resource Include="Assets\images\shot.png" />
+    <Resource Include="Assets\images\focus.png" />
+    <Resource Include="Assets\images\hole.png" />
+    <Resource Include="Assets\images\mole1.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+
+</Project>
