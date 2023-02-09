@@ -2,9 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Timers;
-using System.Windows.Media.Media3D;
-
-// go/no-go
 
 namespace SEReader.Game
 {
@@ -22,40 +19,18 @@ namespace SEReader.Game
             NoGo,
         }
 
-        public class TargetVisibilityChangedArgs : EventArgs
-        {
-            public TargetVisibility Visibility { get; }
-            public int CellX { get; }
-            public int CellY { get; }
-            public TargetVisibilityChangedArgs(TargetVisibility visibility, int x = -1, int y = -1)
-            {
-                Visibility = visibility;
-                CellX = x;
-                CellY = y;
-            }
-        }
-
-        public int CellCountX { get; private set; }
-        public int CellCountY { get; private set; }
-
         public Cell[] Cells => _cells.ToArray();
 
         public bool IsRunning => _timer.Enabled;
 
-        public event EventHandler<Mole> MoleChanged;
-        public event EventHandler<TargetVisibilityChangedArgs> MoleVisibilityChanged;
-        public event EventHandler<TargetVisibilityChangedArgs> ShotVisibilityChanged;
-        public event EventHandler<TargetVisibilityChangedArgs> FocusVisibilityChanged;
-        public event EventHandler<int> ScoreChanged;
-
-        public Game(int cellsX, int cellsY)
+        public Game(GameRenderer renderer)
         {
-            CellCountX = cellsX;
-            CellCountY = cellsY;
+            _renderer = renderer;
+            _renderer.CellClicked += Renderer_CellClicked;
 
-            for (int y = 0; y < CellCountY; ++y)
+            for (int y = 0; y < _options.CellY; ++y)
             {
-                for (int x = 0; x < CellCountX; ++x)
+                for (int x = 0; x < _options.CellX; ++x)
                 {
                     Cell cell = new Cell(x, y);
                     cell.ActivationChanged += Cell_ActivationChanged;
@@ -63,8 +38,10 @@ namespace SEReader.Game
                 }
             }
 
-            _timer.Interval = 1000;
+            _timer.Interval = _options.MoleTimerInterval;
             _timer.Elapsed += Timer_Elapsed;
+
+            _screenLogger = ScreenLogger.Instance?.WithTarget(ScreenLogger.Target.Game);
         }
 
         public void Start()
@@ -79,9 +56,9 @@ namespace SEReader.Game
             foreach (var cell in _cells)
                 cell.Reset();
 
-            MoleVisibilityChanged?.Invoke(this, new TargetVisibilityChangedArgs(TargetVisibility.Hidden));
-            FocusVisibilityChanged?.Invoke(this, new TargetVisibilityChangedArgs(TargetVisibility.Hidden));
-            ShotVisibilityChanged?.Invoke(this, new TargetVisibilityChangedArgs(TargetVisibility.Hidden));
+            _renderer.SetMoleVisibility(TargetVisibility.Hidden);
+            _renderer.SetFocusVisibility(TargetVisibility.Hidden);
+            _renderer.SetShotVisibility(TargetVisibility.Hidden);
 
             _moleX = -1;
             _moleY = -1;
@@ -90,19 +67,19 @@ namespace SEReader.Game
             _focusedCell = null;
             _shotCell = null;
 
-            ScoreChanged(this, _score);
+            _renderer.SetScore(_score);
         }
 
         /// <summary>
         /// Removes any focus/shot
         /// </summary>
-        public void Clear()
+        public void ClearFocus()
         {
             Focus(-1, -1);
 
             if (_shotCell != null)
             {
-                ShotVisibilityChanged(this, new TargetVisibilityChangedArgs(TargetVisibility.Hidden));
+                _renderer.SetShotVisibility(TargetVisibility.Hidden);
                 _shotCell = null;
             }
         }
@@ -123,6 +100,7 @@ namespace SEReader.Game
                     hasChanged = true;
                     _focusedCell.RemoveFocus();
                     _focusedCell = null;
+                    _screenLogger?.Log(ScreenLogger.Target.Game, "focus removed");
                 }
             }
             else if (!_focusedCell?.Matches(x, y) ?? true)
@@ -132,36 +110,28 @@ namespace SEReader.Game
 
                 _focusedCell = _cells.Find(cell => cell.X == x && cell.Y == y);
                 _focusedCell?.SetFocus();
+                _screenLogger?.Log(ScreenLogger.Target.Game, _focusedCell == null ?
+                    "focus removed" :
+                    $"{_focusedCell.X} {_focusedCell.Y}");
             }
 
             if (hasChanged)
             {
-                FocusVisibilityChanged?.Invoke(this, new TargetVisibilityChangedArgs(
+                _renderer.SetFocusVisibility(
                     _focusedCell == null ? TargetVisibility.Hidden : TargetVisibility.Visible,
-                    _focusedCell?.X ?? -1, _focusedCell?.Y ?? -1));
+                    _focusedCell?.X ?? -1, _focusedCell?.Y ?? -1);
             }
-        }
-
-        /// <summary>
-        /// Moves focus to the cell specified via its coordinates, and shoots immediately
-        /// </summary>
-        /// <param name="x">X of a cell to be focused; negative value removes any current focus</param>
-        /// <param name="y">Y of a cell to be focused; negative value removes any current focus</param>
-        public void FocusAndShoot(int x, int y)
-        {
-            Focus(x, y);
-
-            Cell cell = _cells[y * CellCountX + x];
-            cell.Shoot();
         }
 
         // Internal
 
-        readonly List<Cell> _cells = new List<Cell>();
-        readonly Timer _timer = new Timer();
-        readonly Random _random = new Random();
+        readonly List<Cell> _cells = new();
+        readonly Timer _timer = new();
+        readonly Random _random = new();
         readonly FlowLogger _logger = FlowLogger.Instance;
         readonly GameOptions _options = GameOptions.Instance;
+        readonly ScreenLogger _screenLogger;
+        readonly GameRenderer _renderer;
 
         Cell _focusedCell = null;
         Cell _shotCell = null;
@@ -176,19 +146,27 @@ namespace SEReader.Game
         {
             _isMoleVisible = !_isMoleVisible;
 
-            _moleX = _isMoleVisible ? (int)(_random.NextDouble() * CellCountX) : -1;
-            _moleY = _isMoleVisible ? (int)(_random.NextDouble() * CellCountY) /*2*/ : -1;
+            _moleX = _isMoleVisible ? (int)(_random.NextDouble() * _options.CellX) : -1;
+            _moleY = _isMoleVisible ? (int)(_random.NextDouble() * _options.CellY) /*2*/ : -1;
             var moleVisibility = _isMoleVisible ? TargetVisibility.Visible : TargetVisibility.Hidden;
 
             if (_isMoleVisible)
             {
-                _mole = _random.NextDouble() < 0.5 ? Mole.Go : Mole.NoGo;
-                MoleChanged(this, _mole);
+                _mole = _random.NextDouble() < _options.NoGoProbability ? Mole.NoGo : Mole.Go;
+                _renderer.SetMole(_mole);
             }
 
-            MoleVisibilityChanged?.Invoke(this, new TargetVisibilityChangedArgs(moleVisibility, _moleX, _moleY));
+            _renderer.SetMoleVisibility(moleVisibility, _moleX, _moleY);
 
             _logger.Add(LogSource.Experiment, "mole", moleVisibility.ToString(), $"{_moleX},{_moleY}", _mole.ToString().ToLower());
+        }
+
+        private void Renderer_CellClicked(object sender, GameRenderer.CellClickedEventArgs e)
+        {
+            Focus(e.X, e.Y);
+
+            Cell cell = _cells[e.Y * _options.CellX + e.X];
+            cell.Shoot();
         }
 
         private void Cell_ActivationChanged(object sender, Cell.Activity e)
@@ -197,7 +175,7 @@ namespace SEReader.Game
 
             if (e == Cell.Activity.Active)
             {
-                ShotVisibilityChanged(this, new TargetVisibilityChangedArgs(TargetVisibility.Visible, cell.X, cell.Y));
+                _renderer.SetShotVisibility(TargetVisibility.Visible, cell.X, cell.Y);
                 _shotCell = cell;
 
                 if (_moleX == cell.X && _moleY == cell.Y)
@@ -214,14 +192,14 @@ namespace SEReader.Game
                     }
 
                     _logger.Add(LogSource.Experiment, "score", _score.ToString());
-                    ScoreChanged?.Invoke(this, _score);
+                    _renderer.SetScore(_score);
                 }
             }
             else if (_shotCell != null)
             {
                 if (_shotCell.X == cell.X && _shotCell.Y == cell.Y)
                 {
-                    ShotVisibilityChanged(this, new TargetVisibilityChangedArgs(TargetVisibility.Hidden));
+                    _renderer.SetShotVisibility(TargetVisibility.Hidden);
                     _shotCell = null;
                 }
             }
@@ -229,7 +207,7 @@ namespace SEReader.Game
 
         private void Timer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            if (_random.NextDouble() < 0.5)
+            if (_random.NextDouble() < _options.MoleEventRate)
             {
                 ReverseMoleVisibility();
             }

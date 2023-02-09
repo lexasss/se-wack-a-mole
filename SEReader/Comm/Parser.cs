@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SEReader.Logging;
+using System;
 using System.Collections.Generic;
 
 namespace SEReader.Comm
@@ -8,6 +9,11 @@ namespace SEReader.Comm
         public event EventHandler<Sample> Sample;
         public event EventHandler<Intersection> PlaneEnter;
         public event EventHandler<string> PlaneExit;
+
+        public Parser()
+        {
+            _screenLogger = ScreenLogger.Instance?.WithTarget(ScreenLogger.Target.ParserEvent);
+        }
 
         public void Feed(string line)
         {
@@ -22,13 +28,13 @@ namespace SEReader.Comm
                 case State.Initial:
                     if (line.StartsWith(FRAME_NUMBER))
                     {
-                        _frame.ID = int.Parse(line.Substring(FRAME_NUMBER.Length));
+                        _frame.ID = int.Parse(line[FRAME_NUMBER.Length..]);
                     }
                     else if (line.StartsWith(TIME_STAMP))
                     {
-                        _frame.TimeStamp = long.Parse(line.Substring(TIME_STAMP.Length));
+                        _frame.TimeStamp = long.Parse(line[TIME_STAMP.Length..]);
                     }
-                    else if (line.StartsWith(CLOSEST_WORLD_INTERSECTION))
+                    else if (line.StartsWith(NOMERICAL_CLOSEST_WORLD_INTERSECTION))
                     {
                         _state = State.Intersections;
                     }
@@ -38,7 +44,7 @@ namespace SEReader.Comm
                     if (line.StartsWith(INTERSECTION))
                     {
                         _state = State.Intersection;
-                        _intersection.ID = int.Parse(line.Substring(INTERSECTION.Length));
+                        _intersection.ID = int.Parse(line[INTERSECTION.Length..]);
                         _intersectionDataIndex = 0;
                     }
                     else
@@ -51,7 +57,7 @@ namespace SEReader.Comm
                 case State.Intersection:
                     if (line.StartsWith(PAD))
                     {
-                        string data = line.Substring(PAD.Length);
+                        string data = line[PAD.Length..];
                         switch (_intersectionDataIndex++)
                         {
                             case 0:
@@ -93,38 +99,42 @@ namespace SEReader.Comm
 
         readonly string FRAME_NUMBER = "FrameNumber";
         readonly string TIME_STAMP = "TimeStamp";
-        readonly string CLOSEST_WORLD_INTERSECTION = "ClosestWorldIntersection";
+        readonly string NOMERICAL_CLOSEST_WORLD_INTERSECTION = "NumericalClosestWorldIntersection";
+        readonly string ESTIMATED_CLOSEST_WORLD_INTERSECTION = "EstimatedClosestWorldIntersection";
         readonly string INTERSECTION = "Intersection";
         readonly string PAD = "\t";
 
+        readonly HashSet<string> _activeIntersections = new();
+        readonly HashSet<string> _foundIntersections = new();
+        readonly ScreenLogger _screenLogger;
+
         State _state = State.Initial;
-        HashSet<string> _activeIntersections = new HashSet<string>();
-        HashSet<string> _foundIntersections = new HashSet<string>();
 
         int _intersectionDataIndex = -1;
-        Intersection _intersection = new Intersection();
+        Intersection _intersection = new();
 
-        Sample _frame = new Sample() { Intersections = new List<Intersection>() }; // used as a buffer
+        Sample _frame = new() { Intersections = new List<Intersection>() }; // used as a buffer
 
-
-        void CreateIntersection()
+        private void CreateIntersection()
         {
             _foundIntersections.Add(_intersection.PlaneName);
             _frame.Intersections.Add(_intersection);
 
             if (!_activeIntersections.Contains(_intersection.PlaneName))
             {
+                _screenLogger?.Log(ScreenLogger.Target.ParserEvent, $"Entered {_intersection.PlaneName}");
                 PlaneEnter?.Invoke(this, _intersection);
             }
         }
 
-        void FinilizeFrame()
+        private void FinilizeFrame()
         {
             if (_frame.ID != 0)
             {
                 _activeIntersections.ExceptWith(_foundIntersections);
                 foreach (var name in _activeIntersections)
                 {
+                    _screenLogger?.Log(ScreenLogger.Target.ParserEvent, $"Exited {name}");
                     PlaneExit?.Invoke(this, name);
                 }
 

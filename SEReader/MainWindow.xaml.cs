@@ -6,6 +6,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using SEReader.Comm;
 using SEReader.Experiment;
+using SEReader.Game;
 using SEReader.Logging;
 
 namespace SEReader
@@ -26,28 +27,35 @@ namespace SEReader
 
     public partial class MainWindow : Window
     {
-        readonly DataSource _dataSource = new DataSource();
-        readonly Parser _parser = new Parser();
+        readonly DataSource _dataSource = new();
+        readonly Parser _parser = new();
+        readonly ScreenLogger _screenLogger;
 
         readonly Game.Game _game;
-        readonly Game.GameRenderer _gameRenderer;
-        readonly Observer _gameController;
+        readonly GameRenderer _gameRenderer;
+        readonly Observer _gazeController;
         readonly Observer _leftMirror = new Mirror("LeftScreen");
+
+        object _allContent;
 
         public MainWindow()
         {
             InitializeComponent();
+
+            _allContent = Content;
 
             _dataSource.Data += DataSource_Data;
             _dataSource.Closed += DataSource_Closed;
 
             _parser.PlaneEnter += Parser_PlaneEnter;
             _parser.PlaneExit += Parser_PlaneExit;
-            _parser.Sample += Parser_Frame;
+            _parser.Sample += Parser_Sample;
 
-            _game = new Game.Game(6, 4);
-            _gameController = new Game.GameController("Windshield", 1.0, 1.0, _game);
-            _gameRenderer = new Game.GameRenderer(_game, grdGame, lblScore);
+            _screenLogger = new(txbOutput);
+
+            _gameRenderer = new GameRenderer(grdGame, lblScore);
+            _game = new Game.Game(_gameRenderer);
+            _gazeController = new GazeController(_game, GameOptions.Instance.ScreenName);
 
             KeyDown += MainWindow_KeyDown;
             Closing += MainWindow_Closing;
@@ -90,35 +98,32 @@ namespace SEReader
             txbOutput.ScrollToEnd();
         }
 
-        private void Parser_Frame(object sender, Sample e)
+        private void Parser_Sample(object sender, Sample e)
         {
             lblPlane.Content = string.Join( ", ", e.Intersections.Select(intersection => intersection.PlaneName));
             lblFrameID.Content = e.ID;
-            //txbOutput.Text += $"\nFrame: {e.TimeStamp}";
 
-            _leftMirror.Feed(ref e);
-            _gameController.Feed(ref e);
+            //_leftMirror.Feed(ref e);
+            _gazeController.Feed(ref e);
         }
 
         private void Parser_PlaneExit(object sender, string e)
         {
-            txbOutput.Text += $"\nExited: {e}";
             lblPlane.Content = "";
 
-            if (_gameController.PlaneName == e)
+            if (_gazeController.PlaneName == e)
             {
-                _gameController.Notify(Observer.Event.PlaneExit);
+                _gazeController.Notify(Observer.Event.PlaneExit);
             }
         }
 
         private void Parser_PlaneEnter(object sender, Intersection e)
         {
-            txbOutput.Text += $"\nEntered: {e.PlaneName}";
             lblPlane.Content = e.PlaneName;
 
-            if (_gameController.PlaneName == e.PlaneName)
+            if (_gazeController.PlaneName == e.PlaneName)
             {
-                _gameController.Notify(Observer.Event.PlaneEnter);
+                _gazeController.Notify(Observer.Event.PlaneEnter);
             }
         }
 
@@ -134,10 +139,7 @@ namespace SEReader
 
         private async void MainWindow_KeyDown(object sender, KeyEventArgs e)
         {
-            if (!stpSettings.IsEnabled)
-            {
-                return;
-            }
+            bool isRunning = !stpSettings.IsEnabled;
 
             if (e.Key == Key.F5)    // Test DataSource
             {
@@ -164,17 +166,44 @@ namespace SEReader
                 else
                     _game.Start();
             }
-            else if (e.Key == Key.F8)
+            else if (e.Key == Key.F8)   // Test GameController
             {
                 stpSettings.IsEnabled = false;
                 btnStartStop.IsEnabled = false;
 
                 _game.Start();
-                await Tests.GameController.Run(_gameController as Game.GameController);
+                await Tests.GameController.Run(_gazeController as GazeController);
                 _game.Stop();
 
                 stpSettings.IsEnabled = true;
                 btnStartStop.IsEnabled = true;
+            }
+            else if (e.Key == Key.F9)   // Test LowPassFilter
+            {
+                stpSettings.IsEnabled = false;
+                btnStartStop.IsEnabled = false;
+
+                _game.Start();
+                await Tests.LowPassFilter.Run(_gazeController as GazeController);
+                _game.Stop();
+
+                stpSettings.IsEnabled = true;
+                btnStartStop.IsEnabled = true;
+            }
+            else if (e.Key == Key.F11)
+            {
+                if (WindowStyle == WindowStyle.None)
+                {
+                    WindowStyle = WindowStyle.SingleBorderWindow;
+                    WindowState = WindowState.Normal;
+                    Content = _allContent;
+                }
+                else
+                {
+                    WindowStyle = WindowStyle.None;
+                    WindowState = WindowState.Maximized;
+                    Content = grdGame;
+                }
             }
         }
 

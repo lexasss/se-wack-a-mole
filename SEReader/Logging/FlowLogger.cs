@@ -38,14 +38,14 @@ namespace SEReader.Logging
         public static FlowLogger Instance => _instance ??= new();
 
         public bool IsEnabled { get; set; } = true;
+
         public bool HasRecords => _records.Count > 0;
 
         public void Add(LogSource source, string type, params string[] data)
         {
             if (IsEnabled)
             {
-                var record = new Record(source, type, data);
-                _records.Add(record);
+                _records.Add(new Record(source, type, data));
             }
         }
 

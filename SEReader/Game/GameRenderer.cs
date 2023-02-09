@@ -7,25 +7,31 @@ using System.Windows.Threading;
 
 namespace SEReader.Game
 {
-    internal class GameRenderer
+    public class GameRenderer
     {
-        public GameRenderer(Game game, Grid grid, Label score)
+        public class CellClickedEventArgs : EventArgs
         {
-            _game = game;
+            public int X { get; }
+            public int Y { get; }
+            public CellClickedEventArgs(int x, int y)
+            {
+                X = x;
+                Y = y;
+            }
+        }
+
+        public event EventHandler<CellClickedEventArgs> CellClicked;
+
+        public GameRenderer(Grid grid, Label score)
+        {
             //_grid = grid;
             _score = score;
 
             _dispatcher = Dispatcher.CurrentDispatcher;
 
-            game.MoleChanged += Game_MoleChanged;
-            game.MoleVisibilityChanged += Game_MoleVisibilityChanged;
-            game.ShotVisibilityChanged += Game_ShotVisibilityChanged;
-            game.FocusVisibilityChanged += Game_FocusVisibilityChanged;
-            game.ScoreChanged += Game_ScoreChanged;
-
-            for (int y = 0; y < game.CellCountY; ++y)
+            for (int y = 0; y < _options.CellY; ++y)
                 grid.RowDefinitions.Add(new RowDefinition());
-            for (int x = 0; x < game.CellCountX; ++x)
+            for (int x = 0; x < _options.CellX; ++x)
                 grid.ColumnDefinitions.Add(new ColumnDefinition());
 
             var imagePath = @"pack://application:,,,/SEReader;component/Assets/images/";
@@ -35,14 +41,14 @@ namespace SEReader.Game
             var mole1Bitmap = new BitmapImage(new Uri($"{imagePath}mole1.png", UriKind.Absolute));
             var mole2Bitmap = new BitmapImage(new Uri($"{imagePath}mole2.png", UriKind.Absolute));
 
-            for (int y = 0; y < game.CellCountY; ++y)
+            for (int y = 0; y < _options.CellY; ++y)
             {
-                for (int x = 0; x < game.CellCountX; ++x)
+                for (int x = 0; x < _options.CellX; ++x)
                 {
-                    Image img = new Image
+                    Image img = new()
                     {
                         Source = holeBitmap,
-                        Tag = $"{x},{y}",
+                        Tag = $"{x},{y}",       // used to decode coords when clicked
                     };
                     img.TouchDown += Cell_Click;
                     img.MouseDown += Cell_Click;
@@ -104,9 +110,72 @@ namespace SEReader.Game
             */
         }
 
+        public void SetMole(Game.Mole mole)
+        {
+            _mole = mole switch
+            {
+                Game.Mole.Go => _mole1,
+                Game.Mole.NoGo => _mole2,
+                _ => throw new Exception($"No such mole '{mole}' to render")
+            }; ;
+        }
+
+        public void SetMoleVisibility(Game.TargetVisibility visibility, int x = -1, int y = -1)
+        {
+            _dispatcher.Invoke(() =>
+            {
+                if (visibility == Game.TargetVisibility.Visible)
+                {
+                    Show(_mole, x, y);
+                    //_storyboard.Begin(_grid);
+                }
+                else
+                {
+                    Hide(_mole);
+                }
+            });
+        }
+
+        public void SetShotVisibility(Game.TargetVisibility visibility, int x = -1, int y = -1)
+        {
+            _dispatcher.Invoke(() =>
+            {
+                if (visibility == Game.TargetVisibility.Visible)
+                {
+                    Show(_shot, x, y);
+                }
+                else
+                {
+                    Hide(_shot);
+                }
+            });
+        }
+
+        public void SetFocusVisibility(Game.TargetVisibility visibility, int x = -1, int y = -1)
+        {
+            _dispatcher.Invoke(() =>
+            {
+                if (visibility == Game.TargetVisibility.Visible)
+                {
+                    Show(_focus, x, y);
+                }
+                else
+                {
+                    Hide(_focus);
+                }
+            });
+        }
+
+        public void SetScore(int score)
+        {
+            _dispatcher.Invoke(() =>
+            {
+                _score.Content = score;
+            });
+        }
+
         // Internal
 
-        readonly Game _game;
         //readonly Grid _grid;
         readonly Label _score;
         readonly Image _mole1;
@@ -114,6 +183,7 @@ namespace SEReader.Game
         readonly Image _shot;
         readonly Image _focus;
         readonly Dispatcher _dispatcher;
+        readonly GameOptions _options = GameOptions.Instance;
         //readonly Storyboard _storyboard;
 
         Image _mole;
@@ -130,75 +200,11 @@ namespace SEReader.Game
             image.Visibility = Visibility.Collapsed;
         }
 
-        private void Game_MoleVisibilityChanged(object sender, Game.TargetVisibilityChangedArgs e)
-        {
-            _dispatcher.Invoke(() =>
-            {
-                if (e.Visibility == Game.TargetVisibility.Visible)
-                {
-                    Show(_mole, e.CellX, e.CellY);
-                    //_storyboard.Begin(_grid);
-                }
-                else
-                {
-                    Hide(_mole);
-                }
-            });
-        }
-
-        private void Game_MoleChanged(object sender, Game.Mole e)
-        {
-            _mole = e switch
-            {
-                Game.Mole.Go => _mole1,
-                Game.Mole.NoGo => _mole2,
-                _ => throw new Exception($"No such mole '{e}' to render")
-            }; ;
-        }
-
-        private void Game_ShotVisibilityChanged(object sender, Game.TargetVisibilityChangedArgs e)
-        {
-            _dispatcher.Invoke(() =>
-            {
-                if (e.Visibility == Game.TargetVisibility.Visible)
-                {
-                    Show(_shot, e.CellX, e.CellY);
-                }
-                else
-                {
-                    Hide(_shot);
-                }
-            });
-        }
-
-        private void Game_FocusVisibilityChanged(object sender, Game.TargetVisibilityChangedArgs e)
-        {
-            _dispatcher.Invoke(() =>
-            {
-                if (e.Visibility == Game.TargetVisibility.Visible)
-                {
-                    Show(_focus, e.CellX, e.CellY);
-                }
-                else
-                {
-                    Hide(_focus);
-                }
-            });
-        }
-
-        private void Game_ScoreChanged(object sender, int e)
-        {
-            _dispatcher.Invoke(() =>
-            {
-                _score.Content = e;
-            });
-        }
-
         private void Cell_Click(object sender, System.Windows.Input.InputEventArgs e)
         {
             Image img = sender as Image;
             var cellCoords = (img.Tag as string).Split(',').Select(v => int.Parse(v)).ToArray();
-            _game.FocusAndShoot(cellCoords[0], cellCoords[1]);
+            CellClicked?.Invoke(this, new CellClickedEventArgs(cellCoords[0], cellCoords[1]));
         }
     }
 }

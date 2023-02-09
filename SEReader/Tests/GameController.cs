@@ -1,4 +1,5 @@
-﻿using SEReader.Utils;
+﻿using SEReader.Game;
+using SEReader.Utils;
 using System;
 using System.Threading.Tasks;
 
@@ -10,28 +11,19 @@ namespace SEReader.Tests
         {
             int count = 1000;
             bool isOnPlane = false;
-            Random random = new Random();
+            var options = GameOptions.Instance;
 
-            Comm.Intersection intersection = new Comm.Intersection()
-            {
-                ID = 1,
-                PlaneName = "Windshield",
-                Gaze = new Comm.Point3D() {
-                    X = random.NextDouble(),
-                    Y = random.NextDouble(),
-                    Z = 0,
-                },
-                Point = new Comm.Point2D()
-                {
-                    X = random.NextDouble(),
-                    Y = random.NextDouble(),
-                }
-            };
+            string screenName = options.ScreenName;
+            var width = options.ScreenWidth;
+            var height = options.ScreenHeight;
+
+            Random random = new();
+
             Comm.Sample sample = new Comm.Sample()
             {
                 ID = 1,
                 TimeStamp = Timestamp.Ms,
-                Intersections = new System.Collections.Generic.List<Comm.Intersection>() { intersection }
+                Intersections = new System.Collections.Generic.List<Comm.Intersection>()
             };
 
             while (--count >= 0)
@@ -43,7 +35,7 @@ namespace SEReader.Tests
                         new Comm.Intersection()
                         {
                             ID = 1,
-                            PlaneName = "Windshield",
+                            PlaneName = screenName,
                             Gaze = new Comm.Point3D()
                             {
                                 X = random.NextDouble(),
@@ -52,8 +44,8 @@ namespace SEReader.Tests
                             },
                             Point = new Comm.Point2D()
                             {
-                                X = random.NextDouble(),
-                                Y = random.NextDouble(),
+                                X = random.NextDouble() * width,
+                                Y = random.NextDouble() * height,
                             }
                         }
                     };

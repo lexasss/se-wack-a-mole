@@ -1,4 +1,6 @@
-﻿namespace SEReader.Comm
+﻿using System;
+
+namespace SEReader.Comm
 {
     public class Point3D
     {
@@ -31,6 +33,13 @@
                 X = double.Parse(v[0]),
                 Y = double.Parse(v[1]),
             };
+        }
+
+        public double Distance(Point2D to)
+        {
+            double dx = X - to.X;
+            double dy = Y - to.Y;
+            return Math.Sqrt(dx * dx + dy * dy);
         }
     }
 
