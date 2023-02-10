@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace SEReader.Comm
 {
+    [AllowScreenLog(ScreenLogger.Target.ParserEvent)]
     public class Parser
     {
         public event EventHandler<Sample> Sample;
@@ -12,7 +13,7 @@ namespace SEReader.Comm
 
         public Parser()
         {
-            _screenLogger = ScreenLogger.Instance?.WithTarget(ScreenLogger.Target.ParserEvent);
+            _screenLogger = ScreenLogger.Create();
         }
 
         public void Feed(string line)
@@ -122,7 +123,7 @@ namespace SEReader.Comm
 
             if (!_activeIntersections.Contains(_intersection.PlaneName))
             {
-                _screenLogger?.Log(ScreenLogger.Target.ParserEvent, $"Entered {_intersection.PlaneName}");
+                _screenLogger?.Log($"Entered {_intersection.PlaneName}");
                 PlaneEnter?.Invoke(this, _intersection);
             }
         }
@@ -134,7 +135,7 @@ namespace SEReader.Comm
                 _activeIntersections.ExceptWith(_foundIntersections);
                 foreach (var name in _activeIntersections)
                 {
-                    _screenLogger?.Log(ScreenLogger.Target.ParserEvent, $"Exited {name}");
+                    _screenLogger?.Log($"Exited {name}");
                     PlaneExit?.Invoke(this, name);
                 }
 

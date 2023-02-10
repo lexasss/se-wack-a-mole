@@ -1,58 +1,94 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Windows.Controls;
 using System.Windows.Threading;
 
 namespace SEReader.Logging
 {
-    internal class ScreenLogger
+    [AttributeUsage(AttributeTargets.Class)]
+    public class AllowScreenLogAttribute : Attribute
     {
-        [Flags]
+        public ScreenLogger.Target Target { get; }
+        public AllowScreenLogAttribute(ScreenLogger.Target target)
+        {
+            Target = target;
+        }
+    }
+
+    public class ScreenLogger
+    {
         public enum Target
         {
-            None = 0,
-            ParserEvent = 1,
-            GazePoint = 2,
-            LowPassFilter = 4,
-            Game = 8,
+            General,
+            ParserEvent,
+            GazePoint,
+            LowPassFilter,
+            Game,
         }
 
-        public static ScreenLogger Instance => _instance;
-
-        public Target Targets { get; private set; } = Target.None;
-
-        public ScreenLogger(TextBox output)
+        public static void Initialize(TextBox output)
         {
-            _instance = this;
-
-            _output = output;
-            _dispatcher = Dispatcher.CurrentDispatcher;
-        }
-
-        public ScreenLogger WithTarget(Target target)
-        {
-            Targets |= target;
-            return this;
-        }
-
-        public void Log(Target target, string message)
-        {
-            if (Targets.HasFlag(target))
+            if (_printer != null)
             {
-                _dispatcher.Invoke(AddToScreen, target, message);
+                throw new Exception($"{nameof(ScreenPrinter)} has been initialized already");
             }
+
+            _printer = new ScreenPrinter(output);
+        }
+
+        public static ScreenLogger Create(Target? target = null)
+        {
+            if (target != null)
+            {
+                return new ScreenLogger(target ?? Target.General);
+            }
+
+            StackTrace stackTrace = new StackTrace();
+            var cls = stackTrace.GetFrame(1).GetMethod().DeclaringType;
+            var attr = (AllowScreenLogAttribute)Attribute.GetCustomAttribute(cls, typeof(AllowScreenLogAttribute));
+            return attr != null ? new ScreenLogger(attr.Target) : null;
+        }
+
+        private ScreenLogger(Target target)
+        {
+            _target = target;
+        }
+
+        public void Log(string message)
+        {
+            _printer?.Print(_target, message);
         }
 
         // Internal
 
-        static ScreenLogger _instance = null;
 
-        readonly TextBox _output;
-        readonly Dispatcher _dispatcher;
-
-        private void AddToScreen(Target target, string message)
+        private class ScreenPrinter
         {
-            _output.Text += $"\n[{target}] {message}";
-            _output.ScrollToEnd();
+            public ScreenPrinter(TextBox output)
+            {
+                _output = output;
+                _dispatcher = Dispatcher.CurrentDispatcher;
+            }
+
+            public void Print(Target target, string message)
+            {
+                _dispatcher.Invoke(PrintSafe, target, message);
+            }
+
+            // Internal
+
+            readonly TextBox _output;
+            readonly Dispatcher _dispatcher;
+
+            private void PrintSafe(Target target, string message)
+            {
+                _output.Text += $"\n[{target}] {message}";
+                _output.ScrollToEnd();
+            }
         }
+
+        static ScreenPrinter _printer = null;
+
+        readonly Target _target;
     }
 }

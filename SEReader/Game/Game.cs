@@ -5,6 +5,7 @@ using System.Timers;
 
 namespace SEReader.Game
 {
+    [AllowScreenLog(ScreenLogger.Target.Game)]
     public class Game
     {
         public enum TargetVisibility
@@ -41,7 +42,7 @@ namespace SEReader.Game
             _timer.Interval = _options.MoleTimerInterval;
             _timer.Elapsed += Timer_Elapsed;
 
-            _screenLogger = ScreenLogger.Instance?.WithTarget(ScreenLogger.Target.Game);
+            _screenLogger = ScreenLogger.Create();
         }
 
         public void Start()
@@ -100,7 +101,7 @@ namespace SEReader.Game
                     hasChanged = true;
                     _focusedCell.RemoveFocus();
                     _focusedCell = null;
-                    _screenLogger?.Log(ScreenLogger.Target.Game, "focus removed");
+                    _screenLogger?.Log("focus removed");
                 }
             }
             else if (!_focusedCell?.Matches(x, y) ?? true)
@@ -110,7 +111,7 @@ namespace SEReader.Game
 
                 _focusedCell = _cells.Find(cell => cell.X == x && cell.Y == y);
                 _focusedCell?.SetFocus();
-                _screenLogger?.Log(ScreenLogger.Target.Game, _focusedCell == null ?
+                _screenLogger?.Log(_focusedCell == null ?
                     "focus removed" :
                     $"{_focusedCell.X} {_focusedCell.Y}");
             }

@@ -4,8 +4,8 @@
     {
         public static GameOptions Instance => _instance ??= new();
 
-        public int CellX { get; } = 3;
-        public int CellY { get; } = 2;
+        public int CellX { get; } = 6;
+        public int CellY { get; } = 4;
         public string ScreenName { get; } = "LeftScreen";
         public int ScreenWidth { get; } = 2560;
         public int ScreenHeight { get; } = 1080;

@@ -5,6 +5,7 @@ using System;
 
 namespace SEReader.Game
 {
+    //[AllowScreenLog(ScreenLogger.Target.LowPassFilter)]
     internal class LowPassFilter
     {
         public LowPassFilter(double threshold)
@@ -12,7 +13,7 @@ namespace SEReader.Game
             _threshold = threshold;
             _gain = _options.LowPassFilterGain;
 
-            //_logger = ScreenLogger.Instance?.WithTarget(ScreenLogger.Target.LowPassFilter);
+            _screenLogger = ScreenLogger.Create();
         }
 
         public Point2D Feed(Point2D point)
@@ -24,7 +25,7 @@ namespace SEReader.Game
                 _point.X = point.X;
                 _point.Y = point.Y;
 
-                _logger?.Log(ScreenLogger.Target.LowPassFilter, $"{point.X:F0} {point.Y:F0}");
+                _screenLogger?.Log($"{point.X:F0} {point.Y:F0}");
             }
             else
             {
@@ -42,7 +43,7 @@ namespace SEReader.Game
                 _point.X = _point.X * prevWeight + point.X * nextWeight;
                 _point.Y = _point.Y * prevWeight + point.Y * nextWeight;
 
-                _logger?.Log(ScreenLogger.Target.LowPassFilter, $"{x:F0} {y:F0} | {point.X:F0} {point.Y:F0} {dist:F0} | {nextWeight1:F3} * {nextWeight2:F3} = {nextWeight:F3} | {_point.X:F0} {_point.Y:F0}");
+                _screenLogger?.Log($"{x:F0} {y:F0} | {point.X:F0} {point.Y:F0} {dist:F0} | {nextWeight1:F3} * {nextWeight2:F3} = {nextWeight:F3} | {_point.X:F0} {_point.Y:F0}");
             }
 
             _realTimePoint.X = point.X;
@@ -62,7 +63,7 @@ namespace SEReader.Game
                 if ((Timestamp.Ms - _exitTimestamp) > _options.LowPassFilterResetDelay)
                 {
                     pointExists = false;
-                    _logger?.Log(ScreenLogger.Target.LowPassFilter, "LP Reset");
+                    _screenLogger?.Log("Reset");
                 }
             }
         }
@@ -74,7 +75,7 @@ namespace SEReader.Game
         readonly Point2D _point = new Point2D(); // buffer
         readonly Point2D _realTimePoint = new Point2D(); // buffer
         readonly GameOptions _options = GameOptions.Instance;
-        readonly ScreenLogger _logger;
+        readonly ScreenLogger _screenLogger;
 
         bool pointExists = false;
         long _exitTimestamp = 0;

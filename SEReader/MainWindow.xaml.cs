@@ -29,7 +29,6 @@ namespace SEReader
     {
         readonly DataSource _dataSource = new();
         readonly Parser _parser = new();
-        readonly ScreenLogger _screenLogger;
 
         readonly Game.Game _game;
         readonly GameRenderer _gameRenderer;
@@ -51,7 +50,7 @@ namespace SEReader
             _parser.PlaneExit += Parser_PlaneExit;
             _parser.Sample += Parser_Sample;
 
-            _screenLogger = new(txbOutput);
+            ScreenLogger.Initialize(txbOutput);
 
             _gameRenderer = new GameRenderer(grdGame, lblScore);
             _game = new Game.Game(_gameRenderer);
