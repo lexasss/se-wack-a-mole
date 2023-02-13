@@ -8,6 +8,7 @@ using SEReader.Comm;
 using SEReader.Experiment;
 using SEReader.Game;
 using SEReader.Logging;
+using SEReader.Tests;
 
 namespace SEReader
 {
@@ -27,19 +28,23 @@ namespace SEReader
 
     public partial class MainWindow : Window
     {
+        const string OPTIONS_FILENAME = "options.json";
+
         readonly DataSource _dataSource = new();
-        readonly Parser _parser = new();
+        readonly Comm.Parser _parser = new();
 
         readonly Game.Game _game;
         readonly GameRenderer _gameRenderer;
         readonly Observer _gazeController;
         readonly Observer _leftMirror = new Mirror("LeftScreen");
 
-        object _allContent;
+        readonly object _allContent;
 
         public MainWindow()
         {
             InitializeComponent();
+
+            GameOptions.Load(OPTIONS_FILENAME);
 
             _allContent = Content;
 
@@ -62,6 +67,10 @@ namespace SEReader
             var settings = Properties.Settings.Default;
             txbHost.Text = settings.Host;
             txbPort.Text = settings.Port;
+
+            Utils.UIHelper.InitComboBox(cmbSource, GameOptions.Instance.IntersectionSource, (value) => {
+                GameOptions.Instance.IntersectionSource = value;
+            });
         }
 
         private void SaveLoggedData()
@@ -76,7 +85,7 @@ namespace SEReader
 
         // Handlers
 
-        private void DataSource_Closed(object sender, EventArgs e)
+        private void DataSource_Closed(object _, EventArgs e)
         {
             btnStartStop.Content = "Start";
             btnStartStop.IsEnabled = true;
@@ -85,7 +94,7 @@ namespace SEReader
             SaveLoggedData();
         }
 
-        private void DataSource_Data(object sender, string e)
+        private void DataSource_Data(object _, string e)
         {
             if (Tests.Setup.IsDebugging)
             {
@@ -97,7 +106,7 @@ namespace SEReader
             txbOutput.ScrollToEnd();
         }
 
-        private void Parser_Sample(object sender, Sample e)
+        private void Parser_Sample(object _, Sample e)
         {
             lblPlane.Content = string.Join( ", ", e.Intersections.Select(intersection => intersection.PlaneName));
             lblFrameID.Content = e.ID;
@@ -106,7 +115,7 @@ namespace SEReader
             _gazeController.Feed(ref e);
         }
 
-        private void Parser_PlaneExit(object sender, string e)
+        private void Parser_PlaneExit(object _, string e)
         {
             lblPlane.Content = "";
 
@@ -116,7 +125,7 @@ namespace SEReader
             }
         }
 
-        private void Parser_PlaneEnter(object sender, Intersection e)
+        private void Parser_PlaneEnter(object _, Intersection e)
         {
             lblPlane.Content = e.PlaneName;
 
@@ -128,17 +137,20 @@ namespace SEReader
 
         // UI handlers
 
-        private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private void MainWindow_Closing(object _, System.ComponentModel.CancelEventArgs e)
         {
             var settings = Properties.Settings.Default;
             settings.Host = txbHost.Text;
             settings.Port = txbPort.Text;
             settings.Save();
+
+            GameOptions.Save(OPTIONS_FILENAME);
         }
 
-        private async void MainWindow_KeyDown(object sender, KeyEventArgs e)
+        private async void MainWindow_KeyDown(object _, KeyEventArgs e)
         {
-            bool isRunning = !stpSettings.IsEnabled;
+            stpSettings.IsEnabled = false;
+            btnStartStop.IsEnabled = false;
 
             if (e.Key == Key.F5)    // Test DataSource
             {
@@ -148,15 +160,10 @@ namespace SEReader
             }
             else if (e.Key == Key.F6)   // Test Parser
             {
-                stpSettings.IsEnabled = false;
-                btnStartStop.IsEnabled = false;
-
                 _game.Start();
+                _parser.Reset();
                 await Tests.Parser.Run(_parser);
                 _game.Stop();
-
-                stpSettings.IsEnabled = true;
-                btnStartStop.IsEnabled = true;
             }
             else if (e.Key == Key.F7)   // Test game with a mouse/touch
             {
@@ -167,27 +174,15 @@ namespace SEReader
             }
             else if (e.Key == Key.F8)   // Test GameController
             {
-                stpSettings.IsEnabled = false;
-                btnStartStop.IsEnabled = false;
-
                 _game.Start();
                 await Tests.GameController.Run(_gazeController as GazeController);
                 _game.Stop();
-
-                stpSettings.IsEnabled = true;
-                btnStartStop.IsEnabled = true;
             }
             else if (e.Key == Key.F9)   // Test LowPassFilter
             {
-                stpSettings.IsEnabled = false;
-                btnStartStop.IsEnabled = false;
-
                 _game.Start();
                 await Tests.LowPassFilter.Run(_gazeController as GazeController);
                 _game.Stop();
-
-                stpSettings.IsEnabled = true;
-                btnStartStop.IsEnabled = true;
             }
             else if (e.Key == Key.F11)
             {
@@ -204,9 +199,12 @@ namespace SEReader
                     Content = grdGame;
                 }
             }
+
+            stpSettings.IsEnabled = true;
+            btnStartStop.IsEnabled = true;
         }
 
-        private async void StartStop_Click(object sender, RoutedEventArgs e)
+        private async void StartStop_Click(object _, RoutedEventArgs e)
         {
             if (_dataSource.IsRunning)
             {
@@ -225,7 +223,8 @@ namespace SEReader
                 stpSettings.IsEnabled = false;
                 btnStartStop.Content = "Interrupt";
 
-                _dataSource.Start(txbHost.Text, txbPort.Text, Tests.Setup.IsDebugging);
+                _parser.Reset();
+                _dataSource.Start(txbHost.Text, txbPort.Text, Setup.IsDebugging);
                 _game.Start();
             }
         }

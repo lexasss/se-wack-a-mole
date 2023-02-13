@@ -1,4 +1,5 @@
-﻿using SEReader.Logging;
+﻿using SEReader.Game;
+using SEReader.Logging;
 using System;
 using System.Collections.Generic;
 
@@ -14,6 +15,23 @@ namespace SEReader.Comm
         public Parser()
         {
             _screenLogger = ScreenLogger.Create();
+            _intersectionSource = NUMERICAL_CLOSEST_WORLD_INTERSECTION;
+        }
+
+        public void Reset()
+        {
+            _state = State.Initial;
+            _intersectionDataIndex = -1;
+            _activeIntersections.Clear();
+            _foundIntersections.Clear();
+            _frame.Intersections.Clear();
+
+            _intersectionSource = GameOptions.Instance.IntersectionSource switch
+            {
+                IntersectionSource.Calibrated => NUMERICAL_CLOSEST_WORLD_INTERSECTION,
+                IntersectionSource.Predicted => ESTIMATED_CLOSEST_WORLD_INTERSECTION,
+                _ => throw new Exception($"This intersection source is not implemented")
+            };
         }
 
         public void Feed(string line)
@@ -35,7 +53,7 @@ namespace SEReader.Comm
                     {
                         _frame.TimeStamp = long.Parse(line[TIME_STAMP.Length..]);
                     }
-                    else if (line.StartsWith(NOMERICAL_CLOSEST_WORLD_INTERSECTION))
+                    else if (line.StartsWith(_intersectionSource))
                     {
                         _state = State.Intersections;
                     }
@@ -100,7 +118,7 @@ namespace SEReader.Comm
 
         readonly string FRAME_NUMBER = "FrameNumber";
         readonly string TIME_STAMP = "TimeStamp";
-        readonly string NOMERICAL_CLOSEST_WORLD_INTERSECTION = "NumericalClosestWorldIntersection";
+        readonly string NUMERICAL_CLOSEST_WORLD_INTERSECTION = "NumericalClosestWorldIntersection";
         readonly string ESTIMATED_CLOSEST_WORLD_INTERSECTION = "EstimatedClosestWorldIntersection";
         readonly string INTERSECTION = "Intersection";
         readonly string PAD = "\t";
@@ -108,6 +126,9 @@ namespace SEReader.Comm
         readonly HashSet<string> _activeIntersections = new();
         readonly HashSet<string> _foundIntersections = new();
         readonly ScreenLogger _screenLogger;
+        
+
+        string _intersectionSource;
 
         State _state = State.Initial;
 

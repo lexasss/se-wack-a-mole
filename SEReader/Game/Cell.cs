@@ -1,4 +1,5 @@
 ﻿using SEReader.Logging;
+using SEReader.Utils;
 using System;
 using System.Diagnostics;
 

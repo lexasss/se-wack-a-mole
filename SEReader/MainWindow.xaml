@@ -11,45 +11,54 @@
         <local:ObjectPresenceToBorderWidthConverter x:Key="op2bw"/>
     </Window.Resources>
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
-        <Grid Grid.Row="0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition Width="auto"/>
-            </Grid.ColumnDefinitions>
-            <StackPanel x:Name="stpSettings" Grid.Column="0"
-                        Orientation="Horizontal"
-                        VerticalAlignment="Center">
-                <Label Content="Host"
-                       VerticalAlignment="Center"/>
-                <TextBox x:Name="txbHost"
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Column="0"
+                    MinWidth="160">
+            <Grid x:Name="stpSettings">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0" Grid.Column="0"
+                       Content="Host"/>
+                <TextBox x:Name="txbHost" Grid.Row="0" Grid.Column="1"
                          Text="127.0.0.1"
-                         MinWidth="80px"
-                         Margin="12px"/>
-                <Separator Margin="12px" />
-                <Label Content="Port"
-                       VerticalAlignment="Center"/>
-                <TextBox x:Name="txbPort"
+                         VerticalContentAlignment="Center"
+                         MinWidth="80px"/>
+                <Label Grid.Row="1" Grid.Column="0"
+                       Content="Port"/>
+                <TextBox x:Name="txbPort" Grid.Row="1" Grid.Column="1"
                          Text="5002"
-                         MinWidth="60px"
-                         Margin="12px"/>
-                <Separator Margin="12px" />
-                <Label x:Name="lblDebug"
-                       Content="Debug"
-                       Visibility="Collapsed"
-                       Foreground="DarkRed"
-                       FontWeight="Bold"
-                       VerticalAlignment="Center"/>
-            </StackPanel>
-            <Button x:Name="btnStartStop" Grid.Column="1" 
-                Padding="12px"
-                Content="Start"
-                Click="StartStop_Click"/>
-        </Grid>
-        <TabControl Grid.Row="1">
+                         VerticalContentAlignment="Center"
+                         MinWidth="60px"/>
+                <Label Grid.Row="3" Grid.Column="0"
+                       Content="Source"/>
+                <ComboBox x:Name="cmbSource" Grid.Row="3" Grid.Column="1"/>
+            </Grid>
+            <Separator Margin="4,8"/>
+            <Button x:Name="btnStartStop"
+                    Padding="12px"
+                    Content="Start"
+                    Click="StartStop_Click"/>
+            <Label x:Name="lblDebug"
+                    Content="Debug"
+                    Visibility="Collapsed"
+                    Foreground="DarkRed"
+                    FontWeight="Bold"
+                    HorizontalAlignment="Center"/>
+        </StackPanel>
+        <TabControl Grid.Column="1">
             <TabItem Header="Log">
                 <TextBox Grid.Row="1" x:Name="txbOutput"
                  VerticalScrollBarVisibility="Auto"

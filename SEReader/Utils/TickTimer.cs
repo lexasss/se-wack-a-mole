@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Timers;
 
-namespace SEReader
+namespace SEReader.Utils
 {
     internal interface ITickUpdatable
     {

@@ -1,5 +1,14 @@
-﻿namespace SEReader.Game
+﻿using System.IO;
+using System.Text.Json;
+
+namespace SEReader.Game
 {
+    internal enum IntersectionSource
+    {
+        Calibrated,
+        Predicted
+    }
+
     internal class GameOptions
     {
         public static GameOptions Instance => _instance ??= new();
@@ -20,6 +29,31 @@
         public double LowPassFilterGain { get; } = 0.01;
         public double LowPassFilterResetDelay { get; } = 500;
         public double CurrentCellExpansion { get; } = 0.1;  // share of the cell size
+        public IntersectionSource IntersectionSource { get; set; } = IntersectionSource.Calibrated;
+
+        public static GameOptions Load(string filename)
+        {
+            if (File.Exists(filename))
+            {
+                using var reader = new StreamReader(filename);
+                string json = reader.ReadToEnd();
+                _instance = (GameOptions)JsonSerializer.Deserialize(json, typeof(GameOptions));
+            }
+
+            return Instance;
+        }
+
+        public static void Save(string filename)
+        {
+            if (_instance == null)
+            {
+                throw new System.Exception("Options do not exist");
+            }
+
+            string json = JsonSerializer.Serialize(_instance);
+            using var writer = new StreamWriter(filename);
+            writer.Write(json);
+        }
 
         // Internal methods
 
