@@ -40,6 +40,17 @@ namespace SEReader.Game
             _isFocused = true;
         }
 
+        public void Shoot()
+        {
+            //_isActivated = false;
+            //_attentionCounter = _options.DwellTime - 1;
+            _attentionCounter = _options.DwellTime + _options.ShotDuration;
+            _isActivated = true;
+
+            _logger.Add(LogSource.Experiment, "cell", "shot-on", $"{Y},{X}");
+            ActivationChanged.Invoke(this, Activity.Active);
+        }
+
         public void RemoveFocus()
         {
             Debug.WriteLine($"{Y}/{X} left");
@@ -72,7 +83,10 @@ namespace SEReader.Game
                 }
                 else if (_attentionCounter < _options.DwellTime)
                 {
-                    IncreaseAttentionCounter(interval);
+                    if (_options.Controller == Controller.Gaze)
+                    {
+                        IncreaseAttentionCounter(interval);
+                    }
                 }
             }
             else if (_isActivated)
@@ -83,12 +97,6 @@ namespace SEReader.Game
             {
                 _attentionCounter = Math.Max(0, _attentionCounter - interval);
             }
-        }
-
-        public void Shoot()
-        {
-            _isActivated = false;
-            _attentionCounter = _options.DwellTime - 1;
         }
 
         // Internal
@@ -106,10 +114,9 @@ namespace SEReader.Game
             _attentionCounter -= interval;
             if (_attentionCounter < _options.DwellTime)
             {
-                //_isActivated = false;
                 _attentionCounter = 0;
 
-                _logger.Add(LogSource.Experiment, "cell", "target-off", $"{Y},{X}");
+                _logger.Add(LogSource.Experiment, "cell", "shot-off", $"{Y},{X}");
                 ActivationChanged.Invoke(this, Activity.Inactive);
             }
         }
@@ -119,11 +126,7 @@ namespace SEReader.Game
             _attentionCounter += interval;
             if (_attentionCounter >= _options.DwellTime)
             {
-                _attentionCounter = _options.DwellTime + _options.ShotDuration;
-                _isActivated = true;
-
-                _logger.Add(LogSource.Experiment, "cell", "target-on", $"{Y},{X}");
-                ActivationChanged.Invoke(this, Activity.Active);
+                Shoot();
             }
         }
     }

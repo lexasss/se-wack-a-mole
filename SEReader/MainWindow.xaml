@@ -45,24 +45,32 @@
                 <TextBox x:Name="txbPort" Grid.Row="1" Grid.Column="1"
                          VerticalContentAlignment="Center"
                          MinWidth="60px"/>
+                <Label Grid.Row="2" Grid.Column="0"
+                       Content="Controller"/>
+                <ComboBox x:Name="cmbController" Grid.Row="2" Grid.Column="1"/>
                 <Label Grid.Row="3" Grid.Column="0"
                        Content="Source"/>
                 <ComboBox x:Name="cmbSource" Grid.Row="3" Grid.Column="1"/>
                 <Label Grid.Row="4" Grid.Column="0"
-                       Content="Go / no-Go"/>
-                <CheckBox x:Name="chkGoNoGo" Grid.Row="4" Grid.Column="1"
+                       HorizontalAlignment="Right"
+                       Content="is filtered"/>
+                <CheckBox x:Name="chkSourceFiltered" Grid.Row="4" Grid.Column="1"
                           VerticalContentAlignment="Center"/>
                 <Label Grid.Row="5" Grid.Column="0"
-                       Content="Dwell time, ms"/>
-                <TextBox x:Name="txbDwellTime" Grid.Row="5" Grid.Column="1"
+                       Content="Go / no-Go"/>
+                <CheckBox x:Name="chkGoNoGo" Grid.Row="5" Grid.Column="1"
                           VerticalContentAlignment="Center"/>
                 <Label Grid.Row="6" Grid.Column="0"
-                       Content="LP filter"/>
-                <CheckBox x:Name="chkLowPassFilter" Grid.Row="6" Grid.Column="1"
+                       Content="Dwell time, ms"/>
+                <TextBox x:Name="txbDwellTime" Grid.Row="6" Grid.Column="1"
                           VerticalContentAlignment="Center"/>
                 <Label Grid.Row="7" Grid.Column="0"
+                       Content="LP filter"/>
+                <CheckBox x:Name="chkLowPassFilter" Grid.Row="7" Grid.Column="1"
+                          VerticalContentAlignment="Center"/>
+                <Label Grid.Row="8" Grid.Column="0"
                        Content="Action interval, ms"/>
-                <TextBox x:Name="txbMoleTimerInterval" Grid.Row="7" Grid.Column="1"
+                <TextBox x:Name="txbMoleTimerInterval" Grid.Row="8" Grid.Column="1"
                           VerticalContentAlignment="Center"/>
             </Grid>
             <Separator Margin="4,8"/>

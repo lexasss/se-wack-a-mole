@@ -14,7 +14,7 @@ namespace SEReader.Game
             _lowPassFilter = new LowPassFilter(_options.ScreenWidth / _options.CellX * 0.7);
 
             _options.Changed += Options_Changed;
-            Options_Changed(null, null);
+            Options_Changed(null, GameOptions.Option.General);
         }
 
         // Internal
@@ -64,7 +64,7 @@ namespace SEReader.Game
             _lowPassFilter.Inform(evt);
         }
 
-        private void Options_Changed(object sender, EventArgs e)
+        private void Options_Changed(object sender, GameOptions.Option e)
         {
             _currentCellSizeFromItsCenter = _options.CurrentCellExpansion + 0.5;
         }

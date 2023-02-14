@@ -20,11 +20,8 @@ namespace SEReader.Game
             }
         }
 
-        public event EventHandler<CellClickedEventArgs> CellClicked;
-
         public GameRenderer(Grid grid, Label score)
         {
-            //_grid = grid;
             _score = score;
 
             _dispatcher = Dispatcher.CurrentDispatcher;
@@ -50,8 +47,6 @@ namespace SEReader.Game
                         Source = holeBitmap,
                         Tag = $"{x},{y}",       // used to decode coords when clicked
                     };
-                    img.TouchDown += Cell_Click;
-                    img.MouseDown += Cell_Click;
 
                     Grid.SetRow(img, y);
                     Grid.SetColumn(img, x);
@@ -161,7 +156,6 @@ namespace SEReader.Game
 
         // Internal
 
-        //readonly Grid _grid;
         readonly Label _score;
         readonly Image _mole1;
         readonly Image _mole2;
@@ -169,7 +163,6 @@ namespace SEReader.Game
         readonly Image _focus;
         readonly Dispatcher _dispatcher;
         readonly GameOptions _options = GameOptions.Instance;
-        //readonly Storyboard _storyboard;
 
         Image _mole;
 
@@ -183,13 +176,6 @@ namespace SEReader.Game
         private void Hide(Image image)
         {
             image.Visibility = Visibility.Collapsed;
-        }
-
-        private void Cell_Click(object sender, System.Windows.Input.InputEventArgs e)
-        {
-            Image img = sender as Image;
-            var cellCoords = (img.Tag as string).Split(',').Select(v => int.Parse(v)).ToArray();
-            CellClicked?.Invoke(this, new CellClickedEventArgs(cellCoords[0], cellCoords[1]));
         }
     }
 }

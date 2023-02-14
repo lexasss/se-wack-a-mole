@@ -5,17 +5,29 @@ using System.Windows;
 
 namespace SEReader.Game
 {
+    internal enum Controller
+    {
+        Gaze,
+        Mouse,
+    }
+
     internal enum IntersectionSource
     {
-        Calibrated,
-        Predicted
+        Gaze,
+        AI,
     }
 
     internal class GameOptions
     {
+        public enum Option
+        {
+            General,
+            Controller,
+        }
+
         public static GameOptions Instance => _instance ??= new();
 
-        public event EventHandler Changed;
+        public event EventHandler<Option> Changed;
 
         // Constant
 
@@ -54,10 +66,21 @@ namespace SEReader.Game
         public double LowPassFilterGain { get; } = 0.01;
         public double LowPassFilterResetDelay { get; } = 500;
         public double CurrentCellExpansion { get; } = 0.1;  // share of the cell size
+
+        public Controller Controller
+        {
+            get => _controller;
+            set => Update(ref _controller, value, Option.Controller);
+        }
         public IntersectionSource IntersectionSource
         {
             get => _intersectionSource;
             set => Update(ref _intersectionSource, value);
+        }
+        public bool IntersectionSourceFiltered
+        {
+            get => _intersectionSourceFiltered;
+            set => Update(ref _intersectionSourceFiltered, value);
         }
 
         public static GameOptions Load(string filename)
@@ -92,12 +115,14 @@ namespace SEReader.Game
         bool _goNoGo = false;
         bool _lowPassFilterEnabled = true;
         int _moleTimerInterval = 1000;          // ms
-        IntersectionSource _intersectionSource = IntersectionSource.Calibrated;
+        Controller _controller = Controller.Gaze;
+        IntersectionSource _intersectionSource = IntersectionSource.Gaze;
+        bool _intersectionSourceFiltered = false;
 
-        void Update<T>(ref T member, T value)
+        void Update<T>(ref T member, T value, Option option = Option.General)
         {
             member = value;
-            Changed?.Invoke(this, new EventArgs());
+            Changed?.Invoke(this, option);
         }
 
         protected GameOptions() { }

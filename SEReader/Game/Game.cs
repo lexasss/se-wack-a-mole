@@ -27,7 +27,6 @@ namespace SEReader.Game
         public Game(GameRenderer renderer)
         {
             _renderer = renderer;
-            _renderer.CellClicked += Renderer_CellClicked;
 
             for (int y = 0; y < _options.CellY; ++y)
             {
@@ -44,7 +43,7 @@ namespace SEReader.Game
             _screenLogger = ScreenLogger.Create();
 
             _options.Changed += Options_Changed;
-            Options_Changed(null, null);
+            Options_Changed(null, GameOptions.Option.General);
         }
 
         public void Start()
@@ -126,6 +125,17 @@ namespace SEReader.Game
             }
         }
 
+        /// <summary>
+        /// Displayes the shooting target
+        /// </summary>
+        /// <param name="x">X of a cell to be shot</param>
+        /// <param name="y">Y of a cell to be shot</param>
+        public void Shoot(int x, int y)
+        {
+            Cell cell = _cells[y * _options.CellX + x];
+            cell.Shoot();
+        }
+
         // Internal
 
         readonly List<Cell> _cells = new();
@@ -162,14 +172,6 @@ namespace SEReader.Game
             _renderer.SetMoleVisibility(moleVisibility, _moleX, _moleY);
 
             _logger.Add(LogSource.Experiment, "mole", moleVisibility.ToString(), $"{_moleX},{_moleY}", _mole.ToString().ToLower());
-        }
-
-        private void Renderer_CellClicked(object sender, GameRenderer.CellClickedEventArgs e)
-        {
-            Focus(e.X, e.Y);
-
-            Cell cell = _cells[e.Y * _options.CellX + e.X];
-            cell.Shoot();
         }
 
         private void Cell_ActivationChanged(object sender, Cell.Activity e)
@@ -216,7 +218,7 @@ namespace SEReader.Game
             }
         }
 
-        private void Options_Changed(object sender, EventArgs e)
+        private void Options_Changed(object sender, GameOptions.Option e)
         {
             _timer.Interval = _options.MoleTimerInterval;
         }

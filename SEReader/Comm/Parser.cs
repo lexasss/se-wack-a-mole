@@ -15,7 +15,7 @@ namespace SEReader.Comm
         public Parser()
         {
             _screenLogger = ScreenLogger.Create();
-            _intersectionSource = NUMERICAL_CLOSEST_WORLD_INTERSECTION;
+            _intersectionSource = CLOSEST_WORLD_INTERSECTION;
         }
 
         public void Reset()
@@ -26,10 +26,14 @@ namespace SEReader.Comm
             _foundIntersections.Clear();
             _frame.Intersections.Clear();
 
-            _intersectionSource = GameOptions.Instance.IntersectionSource switch
+            var options = GameOptions.Instance;
+
+            _intersectionSource = (options.IntersectionSource, options.IntersectionSourceFiltered) switch
             {
-                IntersectionSource.Calibrated => NUMERICAL_CLOSEST_WORLD_INTERSECTION,
-                IntersectionSource.Predicted => ESTIMATED_CLOSEST_WORLD_INTERSECTION,
+                (IntersectionSource.Gaze, false) => CLOSEST_WORLD_INTERSECTION,
+                (IntersectionSource.Gaze, true) => FILTERED_CLOSEST_WORLD_INTERSECTION,
+                (IntersectionSource.AI, false) => ESTIMATED_CLOSEST_WORLD_INTERSECTION,
+                (IntersectionSource.AI, true) => FILTERED_ESTIMATED_CLOSEST_WORLD_INTERSECTION,
                 _ => throw new Exception($"This intersection source is not implemented")
             };
         }
@@ -118,8 +122,10 @@ namespace SEReader.Comm
 
         readonly string FRAME_NUMBER = "FrameNumber";
         readonly string TIME_STAMP = "TimeStamp";
-        readonly string NUMERICAL_CLOSEST_WORLD_INTERSECTION = "NumericalClosestWorldIntersection";
+        readonly string CLOSEST_WORLD_INTERSECTION = "ClosestWorldIntersection";
+        readonly string FILTERED_CLOSEST_WORLD_INTERSECTION = "FilteredClosestWorldIntersection";
         readonly string ESTIMATED_CLOSEST_WORLD_INTERSECTION = "EstimatedClosestWorldIntersection";
+        readonly string FILTERED_ESTIMATED_CLOSEST_WORLD_INTERSECTION = "FilteredEstimatedClosestWorldIntersection";
         readonly string INTERSECTION = "Intersection";
         readonly string PAD = "\t";
 

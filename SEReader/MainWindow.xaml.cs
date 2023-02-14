@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -34,16 +36,20 @@ namespace SEReader
 
         readonly Game.Game _game;
         readonly GameRenderer _gameRenderer;
+        readonly MouseController _mouseController;
         readonly Observer _gazeController;
         readonly Observer _leftMirror = new Mirror("LeftScreen");
 
         readonly object _allContent;
+
+        CancellationTokenSource _gameTestCancellation;
 
         public MainWindow()
         {
             InitializeComponent();
 
             var options = GameOptions.Load(OPTIONS_FILENAME);
+            options.Changed += Options_Changed;
 
             _allContent = Content;
 
@@ -59,6 +65,10 @@ namespace SEReader
             _gameRenderer = new GameRenderer(grdGame, lblScore);
             _game = new Game.Game(_gameRenderer);
             _gazeController = new GazeController(_game, options.ScreenName);
+            _mouseController = new MouseController(_game, grdGame)
+            {
+                IsEnabled = false
+            };
 
             KeyDown += MainWindow_KeyDown;
             Closing += MainWindow_Closing;
@@ -67,8 +77,14 @@ namespace SEReader
             txbHost.Text = settings.Host;
             txbPort.Text = settings.Port;
 
+            Utils.UIHelper.InitComboBox(cmbController, options.Controller, (value) => {
+                options.Controller = value;
+            });
             Utils.UIHelper.InitComboBox(cmbSource, options.IntersectionSource, (value) => {
                 options.IntersectionSource = value;
+            });
+            Utils.UIHelper.InitCheckBox(chkSourceFiltered, options.IntersectionSourceFiltered, (value) => {
+                options.IntersectionSourceFiltered = value;
             });
             Utils.UIHelper.InitCheckBox(chkGoNoGo, options.GoNoGo, (value) => {
                 options.GoNoGo = value;
@@ -82,6 +98,8 @@ namespace SEReader
             Utils.UIHelper.InitTextBox(txbMoleTimerInterval, options.MoleTimerInterval, (value) => {
                 options.MoleTimerInterval = value;
             });
+
+            Options_Changed(options, GameOptions.Option.Controller);
         }
 
         private void SaveLoggedData()
@@ -95,6 +113,17 @@ namespace SEReader
         }
 
         // Handlers
+
+        private void Options_Changed(object sender, GameOptions.Option e)
+        {
+            if (e == GameOptions.Option.Controller)
+            {
+                var options = (GameOptions)sender;
+                _gazeController.IsEnabled = options.Controller == Controller.Gaze;
+                _mouseController.IsEnabled = options.Controller == Controller.Mouse;
+                _game.ClearFocus();
+            }
+        }
 
         private void DataSource_Closed(object _, EventArgs e)
         {
@@ -178,14 +207,19 @@ namespace SEReader
             }
             else if (e.Key == Key.F7)   // Test game with a mouse/touch
             {
-                if (_game.IsRunning)
+                if (_gameTestCancellation == null)
                 {
-                    _game.Stop();
+                    _game.Start();
+                    _gameTestCancellation = new CancellationTokenSource();
+
+                    try { await Task.Delay(-1, _gameTestCancellation.Token); }
+                    catch (Exception ex) { }
+                    finally { _game.Stop(); }
                 }
                 else
                 {
-                    _parser.Reset();
-                    _game.Start();
+                    _gameTestCancellation.Cancel();
+                    _gameTestCancellation = null;
                 }
             }
             else if (e.Key == Key.F8)   // Test GameController
