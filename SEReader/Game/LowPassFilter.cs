@@ -11,7 +11,6 @@ namespace SEReader.Game
         public LowPassFilter(double threshold)
         {
             _threshold = threshold;
-            _gain = _options.LowPassFilterGain;
 
             _screenLogger = ScreenLogger.Create();
         }
@@ -32,8 +31,10 @@ namespace SEReader.Game
                 double dist = _point.Distance(point);
                 double rtDist = _realTimePoint.Distance(point);
 
-                double nextWeight1 = 1.0 / (1.0 + Math.Exp(_gain * (_threshold - dist)));
-                double nextWeight2 = 1.0 - 1.0 / (1.0 + Math.Exp(_gain * (_threshold - rtDist)));
+                double gain = _options.LowPassFilterGain;
+
+                double nextWeight1 = 1.0 / (1.0 + Math.Exp(gain * (_threshold - dist)));
+                double nextWeight2 = 1.0 - 1.0 / (1.0 + Math.Exp(gain * (_threshold - rtDist)));
                 double nextWeight = nextWeight1 * nextWeight2;
                 double prevWeight = 1.0 - nextWeight;
 
@@ -71,7 +72,6 @@ namespace SEReader.Game
         // Internal
 
         readonly double _threshold;
-        readonly double _gain;
         readonly Point2D _point = new Point2D(); // buffer
         readonly Point2D _realTimePoint = new Point2D(); // buffer
         readonly GameOptions _options = GameOptions.Instance;

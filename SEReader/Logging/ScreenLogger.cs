@@ -20,6 +20,7 @@ namespace SEReader.Logging
         public enum Target
         {
             General,
+            DataSource,
             ParserEvent,
             GazePoint,
             LowPassFilter,

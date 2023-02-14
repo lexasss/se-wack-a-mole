@@ -17,7 +17,7 @@ namespace SEReader.Comm
             if (IsRunning) return;
 
             string cmdParam = "/c " + (isTesting ? "ping 127.0.0.1 -n 6" : $"SocketClient.exe TCP {port} {host}");
-            ProcessStartInfo cmdStartInfo = new ProcessStartInfo("cmd", cmdParam)
+            var cmdStartInfo = new ProcessStartInfo("cmd", cmdParam)
             {
                 CreateNoWindow = true,
                 UseShellExecute = false,

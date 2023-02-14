@@ -8,7 +8,6 @@ using SEReader.Comm;
 using SEReader.Experiment;
 using SEReader.Game;
 using SEReader.Logging;
-using SEReader.Tests;
 
 namespace SEReader
 {
@@ -44,7 +43,7 @@ namespace SEReader
         {
             InitializeComponent();
 
-            GameOptions.Load(OPTIONS_FILENAME);
+            var options = GameOptions.Load(OPTIONS_FILENAME);
 
             _allContent = Content;
 
@@ -59,7 +58,7 @@ namespace SEReader
 
             _gameRenderer = new GameRenderer(grdGame, lblScore);
             _game = new Game.Game(_gameRenderer);
-            _gazeController = new GazeController(_game, GameOptions.Instance.ScreenName);
+            _gazeController = new GazeController(_game, options.ScreenName);
 
             KeyDown += MainWindow_KeyDown;
             Closing += MainWindow_Closing;
@@ -68,8 +67,20 @@ namespace SEReader
             txbHost.Text = settings.Host;
             txbPort.Text = settings.Port;
 
-            Utils.UIHelper.InitComboBox(cmbSource, GameOptions.Instance.IntersectionSource, (value) => {
-                GameOptions.Instance.IntersectionSource = value;
+            Utils.UIHelper.InitComboBox(cmbSource, options.IntersectionSource, (value) => {
+                options.IntersectionSource = value;
+            });
+            Utils.UIHelper.InitCheckBox(chkGoNoGo, options.GoNoGo, (value) => {
+                options.GoNoGo = value;
+            });
+            Utils.UIHelper.InitTextBox(txbDwellTime, options.DwellTime, (value) => {
+                options.DwellTime = value;
+            });
+            Utils.UIHelper.InitCheckBox(chkLowPassFilter, options.LowPassFilterEnabled, (value) => {
+                options.LowPassFilterEnabled = value;
+            });
+            Utils.UIHelper.InitTextBox(txbMoleTimerInterval, options.MoleTimerInterval, (value) => {
+                options.MoleTimerInterval = value;
             });
         }
 
@@ -160,26 +171,33 @@ namespace SEReader
             }
             else if (e.Key == Key.F6)   // Test Parser
             {
-                _game.Start();
                 _parser.Reset();
+                _game.Start();
                 await Tests.Parser.Run(_parser);
                 _game.Stop();
             }
             else if (e.Key == Key.F7)   // Test game with a mouse/touch
             {
                 if (_game.IsRunning)
+                {
                     _game.Stop();
+                }
                 else
+                {
+                    _parser.Reset();
                     _game.Start();
+                }
             }
             else if (e.Key == Key.F8)   // Test GameController
             {
+                _parser.Reset();
                 _game.Start();
                 await Tests.GameController.Run(_gazeController as GazeController);
                 _game.Stop();
             }
             else if (e.Key == Key.F9)   // Test LowPassFilter
             {
+                _parser.Reset();
                 _game.Start();
                 await Tests.LowPassFilter.Run(_gazeController as GazeController);
                 _game.Stop();
@@ -224,7 +242,7 @@ namespace SEReader
                 btnStartStop.Content = "Interrupt";
 
                 _parser.Reset();
-                _dataSource.Start(txbHost.Text, txbPort.Text, Setup.IsDebugging);
+                _dataSource.Start(txbHost.Text, txbPort.Text, Tests.Setup.IsDebugging);
                 _game.Start();
             }
         }

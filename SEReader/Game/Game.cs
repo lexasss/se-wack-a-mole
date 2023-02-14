@@ -5,7 +5,7 @@ using System.Timers;
 
 namespace SEReader.Game
 {
-    [AllowScreenLog(ScreenLogger.Target.Game)]
+    //[AllowScreenLog(ScreenLogger.Target.Game)]
     public class Game
     {
         public enum TargetVisibility
@@ -39,10 +39,12 @@ namespace SEReader.Game
                 }
             }
 
-            _timer.Interval = _options.MoleTimerInterval;
             _timer.Elapsed += Timer_Elapsed;
 
             _screenLogger = ScreenLogger.Create();
+
+            _options.Changed += Options_Changed;
+            Options_Changed(null, null);
         }
 
         public void Start()
@@ -153,7 +155,7 @@ namespace SEReader.Game
 
             if (_isMoleVisible)
             {
-                _mole = _random.NextDouble() < _options.NoGoProbability ? Mole.NoGo : Mole.Go;
+                _mole = _options.GoNoGo && _random.NextDouble() < _options.NoGoProbability ? Mole.NoGo : Mole.Go;
                 _renderer.SetMole(_mole);
             }
 
@@ -212,6 +214,11 @@ namespace SEReader.Game
             {
                 ReverseMoleVisibility();
             }
+        }
+
+        private void Options_Changed(object sender, EventArgs e)
+        {
+            _timer.Interval = _options.MoleTimerInterval;
         }
     }
 }

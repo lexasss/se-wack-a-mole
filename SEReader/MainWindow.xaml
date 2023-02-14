@@ -16,7 +16,7 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <StackPanel Grid.Column="0"
-                    MinWidth="160">
+                    MinWidth="200">
             <Grid x:Name="stpSettings">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
@@ -29,22 +29,41 @@
                     <RowDefinition/>
                     <RowDefinition/>
                     <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
                 </Grid.RowDefinitions>
                 <Label Grid.Row="0" Grid.Column="0"
                        Content="Host"/>
                 <TextBox x:Name="txbHost" Grid.Row="0" Grid.Column="1"
-                         Text="127.0.0.1"
                          VerticalContentAlignment="Center"
                          MinWidth="80px"/>
                 <Label Grid.Row="1" Grid.Column="0"
                        Content="Port"/>
                 <TextBox x:Name="txbPort" Grid.Row="1" Grid.Column="1"
-                         Text="5002"
                          VerticalContentAlignment="Center"
                          MinWidth="60px"/>
                 <Label Grid.Row="3" Grid.Column="0"
                        Content="Source"/>
                 <ComboBox x:Name="cmbSource" Grid.Row="3" Grid.Column="1"/>
+                <Label Grid.Row="4" Grid.Column="0"
+                       Content="Go / no-Go"/>
+                <CheckBox x:Name="chkGoNoGo" Grid.Row="4" Grid.Column="1"
+                          VerticalContentAlignment="Center"/>
+                <Label Grid.Row="5" Grid.Column="0"
+                       Content="Dwell time, ms"/>
+                <TextBox x:Name="txbDwellTime" Grid.Row="5" Grid.Column="1"
+                          VerticalContentAlignment="Center"/>
+                <Label Grid.Row="6" Grid.Column="0"
+                       Content="LP filter"/>
+                <CheckBox x:Name="chkLowPassFilter" Grid.Row="6" Grid.Column="1"
+                          VerticalContentAlignment="Center"/>
+                <Label Grid.Row="7" Grid.Column="0"
+                       Content="Action interval, ms"/>
+                <TextBox x:Name="txbMoleTimerInterval" Grid.Row="7" Grid.Column="1"
+                          VerticalContentAlignment="Center"/>
             </Grid>
             <Separator Margin="4,8"/>
             <Button x:Name="btnStartStop"

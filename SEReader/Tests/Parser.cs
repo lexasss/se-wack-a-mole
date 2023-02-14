@@ -8,7 +8,7 @@ namespace SEReader.Tests
     {
         public static async Task Run(Comm.Parser parser)
         {
-            string filename = "test-data-socketclient.txt";
+            string filename = "test-data-socketclient2.txt";
             if (!File.Exists(filename))
             {
                 MessageBox.Show($"File '{filename}' does not exist in the app folder.", "SEReader : Test", MessageBoxButton.OK, MessageBoxImage.Error);

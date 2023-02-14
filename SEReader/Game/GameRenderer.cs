@@ -93,21 +93,6 @@ namespace SEReader.Game
             grid.Children.Add(_focus);
 
             _mole = _mole1;
-            /*
-            var st = new ScaleTransform(2, 1);
-            _mole.LayoutTransform = st;
-
-            DoubleAnimation scaleAnimation = new DoubleAnimation();
-            scaleAnimation.From = 1.0;
-            scaleAnimation.To = 2.0;
-            scaleAnimation.Duration = new Duration(TimeSpan.FromMilliseconds(500));
-            scaleAnimation.AutoReverse = true;
-
-            _storyboard = new Storyboard();
-            _storyboard.Children.Add(scaleAnimation);
-            Storyboard.SetTarget(scaleAnimation, _mole.LayoutTransform);
-            Storyboard.SetTargetProperty(scaleAnimation, new PropertyPath(ScaleTransform.ScaleXProperty));
-            */
         }
 
         public void SetMole(Game.Mole mole)

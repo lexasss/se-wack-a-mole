@@ -11,8 +11,10 @@ namespace SEReader.Game
             _screenHeight = _options.ScreenHeight;
             _game = game;
 
-            _lowPassFilter = new(_screenWidth / _options.CellX * 0.7);
-            _currentCellSizeFromItsCenter = _options.CurrentCellExpansion + 0.5;
+            _lowPassFilter = new LowPassFilter(_options.ScreenWidth / _options.CellX * 0.7);
+
+            _options.Changed += Options_Changed;
+            Options_Changed(null, null);
         }
 
         // Internal
@@ -22,7 +24,8 @@ namespace SEReader.Game
         readonly Game _game;
         readonly GameOptions _options = GameOptions.Instance;
         readonly LowPassFilter _lowPassFilter;
-        readonly double _currentCellSizeFromItsCenter;
+        
+        double _currentCellSizeFromItsCenter;
 
         int _lastCellX = -1;
         int _lastCellY = -1;
@@ -30,8 +33,6 @@ namespace SEReader.Game
         protected override void HandleIntersection(Intersection intersection)
         {
             Point2D point = _lowPassFilter.Feed(intersection.Point);
-
-            // TODO: handle it properly here,
 
             double gridX = (point.X / _screenWidth * _options.CellX);
             double gridY = (point.Y / _screenHeight * _options.CellY);
@@ -61,6 +62,11 @@ namespace SEReader.Game
             }
 
             _lowPassFilter.Inform(evt);
+        }
+
+        private void Options_Changed(object sender, EventArgs e)
+        {
+            _currentCellSizeFromItsCenter = _options.CurrentCellExpansion + 0.5;
         }
     }
 }
