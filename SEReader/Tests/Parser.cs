@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -6,7 +7,7 @@ namespace SEReader.Tests
 {
     internal class Parser
     {
-        public static async Task Run(Comm.Parser parser)
+        public static async Task Run(Comm.Parser parser, bool isFast)
         {
             string filename = "test-data-socketclient2.txt";
             if (!File.Exists(filename))
@@ -17,11 +18,25 @@ namespace SEReader.Tests
 
             using (var stream = new StreamReader(filename))
             {
+                string line = "";
+
+                Func<Task> parseLine = () => {
+                    parser.Feed(line);
+                    return Task.CompletedTask;
+                };
+
                 while (!stream.EndOfStream)
                 {
-                    string line = stream.ReadLine();
-                    parser.Feed(line);
-                    await Task.Delay(1);
+                    line = stream.ReadLine();
+                    if (isFast)
+                    {
+                        await Task.Run(parseLine);
+                    }
+                    else
+                    {
+                        parser.Feed(line);
+                        await Task.Delay(1);
+                    }
                 }
             }
         }

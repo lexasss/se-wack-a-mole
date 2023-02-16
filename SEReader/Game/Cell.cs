@@ -102,7 +102,7 @@ namespace SEReader.Game
         // Internal
 
         readonly FlowLogger _logger = FlowLogger.Instance;
-        readonly GameOptions _options = GameOptions.Instance;
+        readonly Options _options = Options.Instance;
 
         int _attentionCounter = 0;
         bool _isFocused = false;

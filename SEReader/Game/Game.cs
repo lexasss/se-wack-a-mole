@@ -5,7 +5,7 @@ using System.Timers;
 
 namespace SEReader.Game
 {
-    //[AllowScreenLog(ScreenLogger.Target.Game)]
+    [AllowScreenLog(ScreenLogger.Target.Game)]
     public class Game
     {
         public enum TargetVisibility
@@ -43,7 +43,7 @@ namespace SEReader.Game
             _screenLogger = ScreenLogger.Create();
 
             _options.Changed += Options_Changed;
-            Options_Changed(null, GameOptions.Option.General);
+            Options_Changed(null, Options.Option.General);
         }
 
         public void Start()
@@ -142,7 +142,7 @@ namespace SEReader.Game
         readonly Timer _timer = new();
         readonly Random _random = new();
         readonly FlowLogger _logger = FlowLogger.Instance;
-        readonly GameOptions _options = GameOptions.Instance;
+        readonly Options _options = Options.Instance;
         readonly ScreenLogger _screenLogger;
         readonly GameRenderer _renderer;
 
@@ -218,9 +218,12 @@ namespace SEReader.Game
             }
         }
 
-        private void Options_Changed(object sender, GameOptions.Option e)
+        private void Options_Changed(object sender, Options.Option e)
         {
-            _timer.Interval = _options.MoleTimerInterval;
+            if (e == Options.Option.Game)
+            {
+                _timer.Interval = _options.MoleTimerInterval;
+            }
         }
     }
 }

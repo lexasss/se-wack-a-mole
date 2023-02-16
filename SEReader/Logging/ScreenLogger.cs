@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Controls;
 using System.Windows.Threading;
@@ -21,11 +22,19 @@ namespace SEReader.Logging
         {
             General,
             DataSource,
-            ParserEvent,
+            Parser,
             GazePoint,
             LowPassFilter,
             Game,
+            Renderer,
+            GazeController,
         }
+
+        public static HashSet<Target> Enabled = new()
+        {
+            Target.DataSource,
+            Target.LowPassFilter,
+        };
 
         public static void Initialize(TextBox output)
         {
@@ -57,7 +66,10 @@ namespace SEReader.Logging
 
         public void Log(string message)
         {
-            _printer?.Print(_target, message);
+            if (Enabled.Contains(_target))
+            {
+                _printer?.Print(_target, message);
+            }
         }
 
         // Internal

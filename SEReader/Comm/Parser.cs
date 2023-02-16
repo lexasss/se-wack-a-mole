@@ -1,11 +1,10 @@
-﻿using SEReader.Game;
-using SEReader.Logging;
+﻿using SEReader.Logging;
 using System;
 using System.Collections.Generic;
 
 namespace SEReader.Comm
 {
-    //[AllowScreenLog(ScreenLogger.Target.ParserEvent)]
+    [AllowScreenLog(ScreenLogger.Target.Parser)]
     public class Parser
     {
         public event EventHandler<Sample> Sample;
@@ -26,7 +25,7 @@ namespace SEReader.Comm
             _foundIntersections.Clear();
             _frame.Intersections.Clear();
 
-            var options = GameOptions.Instance;
+            var options = Options.Instance;
 
             _intersectionSource = (options.IntersectionSource, options.IntersectionSourceFiltered) switch
             {

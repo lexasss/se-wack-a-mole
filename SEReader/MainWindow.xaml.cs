@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
@@ -27,12 +28,18 @@ namespace SEReader
         }
     }
 
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, INotifyPropertyChanged
     {
+        public bool IsGazeController => (string)cmbController.SelectedItem == Controller.Gaze.ToString();
+        public bool IsGoNoGo => chkGoNoGo.IsChecked ?? false;
+        public bool IsLowPassFilterEnabled => chkLowPassFilter.IsChecked ?? false;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
         const string OPTIONS_FILENAME = "options.json";
 
         readonly DataSource _dataSource = new();
-        readonly Comm.Parser _parser = new();
+        readonly Parser _parser = new();
 
         readonly Game.Game _game;
         readonly GameRenderer _gameRenderer;
@@ -48,7 +55,9 @@ namespace SEReader
         {
             InitializeComponent();
 
-            var options = GameOptions.Load(OPTIONS_FILENAME);
+            DataContext = this;
+
+            var options = Options.Load(OPTIONS_FILENAME);
             options.Changed += Options_Changed;
 
             _allContent = Content;
@@ -79,6 +88,7 @@ namespace SEReader
 
             Utils.UIHelper.InitComboBox(cmbController, options.Controller, (value) => {
                 options.Controller = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsGazeController)));
             });
             Utils.UIHelper.InitComboBox(cmbSource, options.IntersectionSource, (value) => {
                 options.IntersectionSource = value;
@@ -88,18 +98,44 @@ namespace SEReader
             });
             Utils.UIHelper.InitCheckBox(chkGoNoGo, options.GoNoGo, (value) => {
                 options.GoNoGo = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsGoNoGo)));
             });
             Utils.UIHelper.InitTextBox(txbDwellTime, options.DwellTime, (value) => {
                 options.DwellTime = value;
             });
             Utils.UIHelper.InitCheckBox(chkLowPassFilter, options.LowPassFilterEnabled, (value) => {
                 options.LowPassFilterEnabled = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsLowPassFilterEnabled)));
+            });
+            Utils.UIHelper.InitTextBox(txbLowPassFilterGain, options.LowPassFilterGain, (value) => {
+                options.LowPassFilterGain = value;
+            });
+            Utils.UIHelper.InitTextBox(txbLowPassFilterResetDelay, options.LowPassFilterResetDelay, (value) => {
+                options.LowPassFilterResetDelay = value;
+            });
+            Utils.UIHelper.InitTextBox(txbFocusedCellExpansion, options.FocusedCellExpansion, (value) => {
+                options.FocusedCellExpansion = value;
             });
             Utils.UIHelper.InitTextBox(txbMoleTimerInterval, options.MoleTimerInterval, (value) => {
                 options.MoleTimerInterval = value;
             });
+            Utils.UIHelper.InitTextBox(txbMoleEventRate, options.MoleEventRate, (value) => {
+                options.MoleEventRate = value;
+            });
+            Utils.UIHelper.InitTextBox(txbLPFWeightDamping, options.LowPassFilterWeightDamping, (value) => {
+                options.LowPassFilterWeightDamping = value;
+            });
+            Utils.UIHelper.InitTextBox(txbFocusLatency, options.FocusLatency, (value) => {
+                options.FocusLatency = value;
+            });
+            Utils.UIHelper.InitTextBox(txbNoGoProbability, options.NoGoProbability, (value) => {
+                options.NoGoProbability = value;
+            });
+            Utils.UIHelper.InitTextBox(txbShotDuration, options.ShotDuration, (value) => {
+                options.ShotDuration = value;
+            });
 
-            Options_Changed(options, GameOptions.Option.Controller);
+            Options_Changed(options, Options.Option.Controller);
         }
 
         private void SaveLoggedData()
@@ -114,11 +150,11 @@ namespace SEReader
 
         // Handlers
 
-        private void Options_Changed(object sender, GameOptions.Option e)
+        private void Options_Changed(object sender, Options.Option e)
         {
-            if (e == GameOptions.Option.Controller)
+            if (e == Options.Option.Controller)
             {
-                var options = (GameOptions)sender;
+                var options = (Options)sender;
                 _gazeController.IsEnabled = options.Controller == Controller.Gaze;
                 _mouseController.IsEnabled = options.Controller == Controller.Mouse;
                 _game.ClearFocus();
@@ -136,43 +172,45 @@ namespace SEReader
 
         private void DataSource_Data(object _, string e)
         {
-            if (Tests.Setup.IsDebugging)
-            {
-                txbOutput.Text += "\n" + e;
-            }
-
             _parser.Feed(e);
-
-            txbOutput.ScrollToEnd();
         }
 
         private void Parser_Sample(object _, Sample e)
         {
-            lblPlane.Content = string.Join( ", ", e.Intersections.Select(intersection => intersection.PlaneName));
-            lblFrameID.Content = e.ID;
+            Dispatcher.Invoke(() =>
+            {
+                lblPlane.Content = string.Join(", ", e.Intersections.Select(intersection => intersection.PlaneName));
+                lblFrameID.Content = e.ID;
 
-            //_leftMirror.Feed(ref e);
-            _gazeController.Feed(ref e);
+                //_leftMirror.Feed(ref e);
+                _gazeController.Feed(ref e);
+            });
         }
 
         private void Parser_PlaneExit(object _, string e)
         {
-            lblPlane.Content = "";
-
-            if (_gazeController.PlaneName == e)
+            Dispatcher.Invoke(() =>
             {
-                _gazeController.Notify(Observer.Event.PlaneExit);
-            }
+                lblPlane.Content = "";
+
+                if (_gazeController.PlaneName == e)
+                {
+                    _gazeController.Notify(Observer.Event.PlaneExit);
+                }
+            });
         }
 
         private void Parser_PlaneEnter(object _, Intersection e)
         {
-            lblPlane.Content = e.PlaneName;
-
-            if (_gazeController.PlaneName == e.PlaneName)
+            Dispatcher.Invoke(() =>
             {
-                _gazeController.Notify(Observer.Event.PlaneEnter);
-            }
+                lblPlane.Content = e.PlaneName;
+
+                if (_gazeController.PlaneName == e.PlaneName)
+                {
+                    _gazeController.Notify(Observer.Event.PlaneEnter);
+                }
+            });
         }
 
         // UI handlers
@@ -184,14 +222,23 @@ namespace SEReader
             settings.Port = txbPort.Text;
             settings.Save();
 
-            GameOptions.Save(OPTIONS_FILENAME);
+            Options.Save(OPTIONS_FILENAME);
         }
 
-        private async void MainWindow_KeyDown(object _, KeyEventArgs e)
+        private async Task RunTest(Func<Task> action)
         {
             stpSettings.IsEnabled = false;
             btnStartStop.IsEnabled = false;
 
+            var task = action();
+            await task;
+
+            stpSettings.IsEnabled = true;
+            btnStartStop.IsEnabled = true;
+        }
+
+        private async void MainWindow_KeyDown(object _, KeyEventArgs e)
+        {
             if (e.Key == Key.F5)    // Test DataSource
             {
                 Tests.Setup.IsDebugging = true;
@@ -200,41 +247,53 @@ namespace SEReader
             }
             else if (e.Key == Key.F6)   // Test Parser
             {
-                _parser.Reset();
-                _game.Start();
-                await Tests.Parser.Run(_parser);
-                _game.Stop();
+                await RunTest(async () =>
+                {
+                    _parser.Reset();
+                    _game.Start();
+                    await Tests.Parser.Run(_parser, Keyboard.IsKeyDown(Key.LeftShift));
+                    _game.Stop();
+                });
             }
             else if (e.Key == Key.F7)   // Test game with a mouse/touch
             {
-                if (_gameTestCancellation == null)
+                await RunTest(async () =>
                 {
-                    _game.Start();
-                    _gameTestCancellation = new CancellationTokenSource();
+                    if (_gameTestCancellation == null)
+                    {
+                        _game.Start();
+                        _gameTestCancellation = new CancellationTokenSource();
 
-                    try { await Task.Delay(-1, _gameTestCancellation.Token); }
-                    catch (Exception ex) { }
-                    finally { _game.Stop(); }
-                }
-                else
-                {
-                    _gameTestCancellation.Cancel();
-                    _gameTestCancellation = null;
-                }
+                        try { await Task.Delay(-1, _gameTestCancellation.Token); }
+                        catch (Exception ex) { }
+                        finally { _game.Stop(); }
+                    }
+                    else
+                    {
+                        _gameTestCancellation.Cancel();
+                        _gameTestCancellation = null;
+                    }
+                });
             }
             else if (e.Key == Key.F8)   // Test GameController
             {
-                _parser.Reset();
-                _game.Start();
-                await Tests.GameController.Run(_gazeController as GazeController);
-                _game.Stop();
+                await RunTest(async () =>
+                {
+                    _parser.Reset();
+                    _game.Start();
+                    await Tests.GameController.Run(_gazeController as GazeController);
+                    _game.Stop();
+                });
             }
             else if (e.Key == Key.F9)   // Test LowPassFilter
             {
-                _parser.Reset();
-                _game.Start();
-                await Tests.LowPassFilter.Run(_gazeController as GazeController);
-                _game.Stop();
+                await RunTest(async () =>
+                {
+                    _parser.Reset();
+                    _game.Start();
+                    await Tests.LowPassFilter.Run(_gazeController as GazeController);
+                    _game.Stop();
+                });
             }
             else if (e.Key == Key.F11)
             {
@@ -252,8 +311,6 @@ namespace SEReader
                 }
             }
 
-            stpSettings.IsEnabled = true;
-            btnStartStop.IsEnabled = true;
         }
 
         private async void StartStop_Click(object _, RoutedEventArgs e)

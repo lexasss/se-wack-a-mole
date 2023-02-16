@@ -1,10 +1,12 @@
-﻿using System;
+﻿using SEReader.Logging;
+using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows;
 
 namespace SEReader.Comm
 {
+    [AllowScreenLog(ScreenLogger.Target.DataSource)]
     public class DataSource
     {
         public event EventHandler<string> Data;
@@ -15,6 +17,8 @@ namespace SEReader.Comm
         public void Start(string host, string port, bool isTesting = false)
         {
             if (IsRunning) return;
+
+            _screenLogger = isTesting ? ScreenLogger.Create() : null;
 
             string cmdParam = "/c " + (isTesting ? "ping 127.0.0.1 -n 6" : $"SocketClient.exe TCP {port} {host}");
             var cmdStartInfo = new ProcessStartInfo("cmd", cmdParam)
@@ -51,6 +55,7 @@ namespace SEReader.Comm
         // Internal
 
         Process _cmd;
+        ScreenLogger _screenLogger;
 
         private void Cmd_Exited(object sender, EventArgs e)
         {
@@ -66,6 +71,7 @@ namespace SEReader.Comm
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
+                _screenLogger?.Log(e.Data);
                 Data?.Invoke(this, e.Data);
             });
         }

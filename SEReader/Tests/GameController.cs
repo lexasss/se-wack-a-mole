@@ -11,7 +11,7 @@ namespace SEReader.Tests
         {
             int count = 1000;
             bool isOnPlane = false;
-            var options = GameOptions.Instance;
+            var options = Options.Instance;
 
             string screenName = options.ScreenName;
             var width = options.ScreenWidth;

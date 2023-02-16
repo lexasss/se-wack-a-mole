@@ -18,7 +18,7 @@ namespace SEReader.Tests
                 return;
             }
 
-            string screenName = GameOptions.Instance.ScreenName;
+            string screenName = Options.Instance.ScreenName;
 
             Sample sample = new Sample()
             {

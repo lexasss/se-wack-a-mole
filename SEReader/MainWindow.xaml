@@ -6,9 +6,28 @@
         xmlns:local="clr-namespace:SEReader"
         mc:Ignorable="d"
         Title="SmartEye Data Reader"
-        Height="450" Width="800">
+        MinWidth="1000"
+        MinHeight="600">
     <Window.Resources>
         <local:ObjectPresenceToBorderWidthConverter x:Key="op2bw"/>
+        <Style x:Key="FieldLabel" TargetType="Label">
+            <Setter Property="Width" Value="120"/>
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="MinWidth" Value="90"/>
+            <Setter Property="Padding" Value="2"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style TargetType="ComboBox">
+            <Setter Property="MinWidth" Value="90"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style TargetType="CheckBox">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style TargetType="Separator">
+            <Setter Property="Margin" Value="4,8"/>
+        </Style>
     </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -17,63 +36,108 @@
         </Grid.ColumnDefinitions>
         <StackPanel Grid.Column="0"
                     MinWidth="200">
-            <Grid x:Name="stpSettings">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-                <Label Grid.Row="0" Grid.Column="0"
-                       Content="Host"/>
-                <TextBox x:Name="txbHost" Grid.Row="0" Grid.Column="1"
-                         VerticalContentAlignment="Center"
-                         MinWidth="80px"/>
-                <Label Grid.Row="1" Grid.Column="0"
-                       Content="Port"/>
-                <TextBox x:Name="txbPort" Grid.Row="1" Grid.Column="1"
-                         VerticalContentAlignment="Center"
-                         MinWidth="60px"/>
-                <Label Grid.Row="2" Grid.Column="0"
-                       Content="Controller"/>
-                <ComboBox x:Name="cmbController" Grid.Row="2" Grid.Column="1"/>
-                <Label Grid.Row="3" Grid.Column="0"
-                       Content="Source"/>
-                <ComboBox x:Name="cmbSource" Grid.Row="3" Grid.Column="1"/>
-                <Label Grid.Row="4" Grid.Column="0"
-                       HorizontalAlignment="Right"
-                       Content="is filtered"/>
-                <CheckBox x:Name="chkSourceFiltered" Grid.Row="4" Grid.Column="1"
-                          VerticalContentAlignment="Center"/>
-                <Label Grid.Row="5" Grid.Column="0"
-                       Content="Go / no-Go"/>
-                <CheckBox x:Name="chkGoNoGo" Grid.Row="5" Grid.Column="1"
-                          VerticalContentAlignment="Center"/>
-                <Label Grid.Row="6" Grid.Column="0"
-                       Content="Dwell time, ms"/>
-                <TextBox x:Name="txbDwellTime" Grid.Row="6" Grid.Column="1"
-                          VerticalContentAlignment="Center"/>
-                <Label Grid.Row="7" Grid.Column="0"
-                       Content="LP filter"/>
-                <CheckBox x:Name="chkLowPassFilter" Grid.Row="7" Grid.Column="1"
-                          VerticalContentAlignment="Center"/>
-                <Label Grid.Row="8" Grid.Column="0"
-                       Content="Action interval, ms"/>
-                <TextBox x:Name="txbMoleTimerInterval" Grid.Row="8" Grid.Column="1"
-                          VerticalContentAlignment="Center"/>
-            </Grid>
-            <Separator Margin="4,8"/>
+            <StackPanel x:Name="stpSettings">
+                <StackPanel Orientation="Horizontal">
+                    <Label Style="{StaticResource FieldLabel}"
+                        Content="Host"/>
+                    <TextBox x:Name="txbHost"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Label Style="{StaticResource FieldLabel}"
+                           Content="Port"/>
+                    <TextBox x:Name="txbPort"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Label Style="{StaticResource FieldLabel}"
+                           Content="Controller"/>
+                    <ComboBox x:Name="cmbController"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal"
+                            IsEnabled="{Binding IsGazeController}">
+                    <Label Style="{StaticResource FieldLabel}"
+                           Content="dwell time, ms"
+                           HorizontalContentAlignment="Right"/>
+                    <TextBox x:Name="txbDwellTime"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Label Style="{StaticResource FieldLabel}"
+                           Content="Source"/>
+                    <ComboBox x:Name="cmbSource"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Label Style="{StaticResource FieldLabel}"
+                           HorizontalContentAlignment="Right"
+                           Content="is filtered"/>
+                    <CheckBox x:Name="chkSourceFiltered"
+                              VerticalContentAlignment="Center"/>
+                </StackPanel>
+                <Separator/>
+                <StackPanel Orientation="Horizontal">
+                    <Label Style="{StaticResource FieldLabel}"
+                           Content="LP filter"/>
+                    <CheckBox x:Name="chkLowPassFilter"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal"
+                            IsEnabled="{Binding IsLowPassFilterEnabled}">
+                    <Label Style="{StaticResource FieldLabel}"
+                           Content="gain"
+                           HorizontalContentAlignment="Right"/>
+                    <TextBox x:Name="txbLowPassFilterGain"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal"
+                            IsEnabled="{Binding IsLowPassFilterEnabled}">
+                    <Label Style="{StaticResource FieldLabel}"
+                           Content="reset delay"
+                           HorizontalContentAlignment="Right"/>
+                    <TextBox x:Name="txbLowPassFilterResetDelay"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal"
+                            IsEnabled="{Binding IsLowPassFilterEnabled}">
+                    <Label Style="{StaticResource FieldLabel}"
+                           HorizontalContentAlignment="Right"
+                           Content="weight damping"/>
+                    <TextBox x:Name="txbLPFWeightDamping"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Label Style="{StaticResource FieldLabel}"
+                           Content="Foc. cell expansion"/>
+                    <TextBox x:Name="txbFocusedCellExpansion"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Label Style="{StaticResource FieldLabel}"
+                           Content="Focus latency, ms"/>
+                    <TextBox x:Name="txbFocusLatency"/>
+                </StackPanel>
+                <Separator/>
+                <StackPanel Orientation="Horizontal">
+                    <Label Style="{StaticResource FieldLabel}"
+                           Content="Go / no-Go"/>
+                    <CheckBox x:Name="chkGoNoGo"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal"
+                            IsEnabled="{Binding IsGoNoGo}">
+                    <Label Style="{StaticResource FieldLabel}"
+                           Content="probability"
+                           HorizontalContentAlignment="Right"/>
+                    <TextBox x:Name="txbNoGoProbability"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Label Style="{StaticResource FieldLabel}"
+                           Content="Action interval, ms"/>
+                    <TextBox x:Name="txbMoleTimerInterval"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Label Style="{StaticResource FieldLabel}"
+                           Content="Mole event rate"/>
+                    <TextBox x:Name="txbMoleEventRate"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Label Style="{StaticResource FieldLabel}"
+                           Content="Shot duration, ms"/>
+                    <TextBox x:Name="txbShotDuration"/>
+                </StackPanel>
+            </StackPanel>
+            <Separator/>
             <Button x:Name="btnStartStop"
                     Padding="12px"
                     Content="Start"
@@ -88,8 +152,9 @@
         <TabControl Grid.Column="1">
             <TabItem Header="Log">
                 <TextBox Grid.Row="1" x:Name="txbOutput"
-                 VerticalScrollBarVisibility="Auto"
-                 Text="Output: "/>
+                         VerticalScrollBarVisibility="Auto"
+                         VerticalAlignment="Top"
+                         Text="Output: "/>
             </TabItem>
             <TabItem Header="Plane">
                 <Grid>

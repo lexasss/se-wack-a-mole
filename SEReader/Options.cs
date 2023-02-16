@@ -1,0 +1,188 @@
+﻿using System;
+using System.IO;
+using System.Text.Json;
+using System.Windows;
+
+namespace SEReader
+{
+    internal enum Controller
+    {
+        Gaze,
+        Mouse,
+    }
+
+    internal enum IntersectionSource
+    {
+        Gaze,
+        AI,
+    }
+
+    internal class Options
+    {
+        public enum Option
+        {
+            General,
+            Parser,
+            LowPassFilter,
+            Controller,
+            Game,
+        }
+
+        public static Options Instance => _instance ??= new();
+
+        public event EventHandler<Option> Changed;
+
+        // Constant
+
+        public int CellX { get; } = 4;
+        public int CellY { get; } = 2;
+        public string ScreenName { get; } = "LeftScreen";
+        public int ScreenWidth { get; } = (int)SystemParameters.PrimaryScreenWidth;
+        public int ScreenHeight { get; } = (int)SystemParameters.PrimaryScreenHeight;
+        public int PointsPerMole { get; } = 5;
+
+        // Adjustable / potentionally adjustable
+
+        // Game
+
+        public int MoleTimerInterval
+        {
+            get => _moleTimerInterval;
+            set => Update(ref _moleTimerInterval, value, Option.Game);
+        }
+        public double MoleEventRate
+        {
+            get => _moleEventRate;
+            set => Update(ref _moleEventRate, value, Option.Game);
+        }
+        public bool GoNoGo
+        {
+            get => _goNoGo;
+            set => Update(ref _goNoGo, value, Option.Game);
+        }
+        public double NoGoProbability
+        {
+            get => _noGoProbability;
+            set => Update(ref _noGoProbability, value, Option.Game);
+        }
+
+        // Low-pass filter
+
+        public bool LowPassFilterEnabled
+        {
+            get => _lowPassFilterEnabled;
+            set => Update(ref _lowPassFilterEnabled, value, Option.LowPassFilter);
+        }
+        public double LowPassFilterGain
+        {
+            get => _lowPassFilterGain;
+            set => Update(ref _lowPassFilterGain, value, Option.LowPassFilter);
+        }
+        public int LowPassFilterResetDelay
+        {
+            get => _lowPassFilterResetDelay;
+            set => Update(ref _lowPassFilterResetDelay, value, Option.LowPassFilter);
+        }
+        public double LowPassFilterWeightDamping
+        {
+            get => _lowPassFilterWeightDamping;
+            set => Update(ref _lowPassFilterWeightDamping, value, Option.LowPassFilter);
+        }
+
+        // Controller
+
+        public double FocusedCellExpansion
+        {
+            get => _currentCellExpansion;
+            set => Update(ref _currentCellExpansion, value, Option.Controller);
+        }
+        public int FocusLatency
+        {
+            get => _focusLatency;
+            set => Update(ref _focusLatency, value, Option.Controller);
+        }
+        public Controller Controller
+        {
+            get => _controller;
+            set => Update(ref _controller, value, Option.Controller);
+        }
+
+        public int DwellTime
+        {
+            get => _dwellTime;
+            set => Update(ref _dwellTime, value);
+        }
+        public int ShotDuration
+        {
+            get => _shotDuration;
+            set => Update(ref _shotDuration, value);
+        }
+
+        // Parser
+
+        public IntersectionSource IntersectionSource
+        {
+            get => _intersectionSource;
+            set => Update(ref _intersectionSource, value, Option.Parser);
+        }
+        public bool IntersectionSourceFiltered
+        {
+            get => _intersectionSourceFiltered;
+            set => Update(ref _intersectionSourceFiltered, value, Option.Parser);
+        }
+
+        // Load/Save
+
+        public static Options Load(string filename)
+        {
+            if (File.Exists(filename))
+            {
+                using var reader = new StreamReader(filename);
+                string json = reader.ReadToEnd();
+                _instance = (Options)JsonSerializer.Deserialize(json, typeof(Options));
+            }
+
+            return Instance;
+        }
+
+        public static void Save(string filename)
+        {
+            if (_instance == null)
+            {
+                throw new Exception("Options do not exist");
+            }
+
+            string json = JsonSerializer.Serialize(_instance);
+            using var writer = new StreamWriter(filename);
+            writer.Write(json);
+        }
+
+        // Internal
+
+        static Options _instance = null;
+
+        int _dwellTime = 500;                   // ms
+        bool _goNoGo = false;
+        bool _lowPassFilterEnabled = true;
+        double _lowPassFilterGain = 0.01;
+        double _lowPassFilterWeightDamping = 0.8;   // unconditional next-gaze-point (on screen) weihgt damping
+        int _moleTimerInterval = 1000;              // ms
+        Controller _controller = Controller.Gaze;
+        IntersectionSource _intersectionSource = IntersectionSource.Gaze;
+        bool _intersectionSourceFiltered = false;
+        int _focusLatency = 500;                // ms
+        double _noGoProbability = 0.3;          // 0..1
+        int _lowPassFilterResetDelay = 500;     // ms
+        double _currentCellExpansion = 0.1;     // share of the cell size
+        int _shotDuration = 200;                // ms
+        double _moleEventRate = 0.5;            // 0..1
+
+        private void Update<T>(ref T member, T value, Option option = Option.General)
+        {
+            member = value;
+            Changed?.Invoke(this, option);
+        }
+
+        protected Options() { }
+    }
+}
