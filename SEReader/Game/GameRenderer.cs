@@ -92,12 +92,12 @@ namespace SEReader.Game
             _mole = _mole1;
         }
 
-        public void SetMole(Game.Mole mole)
+        public void SetMole(MoleType mole)
         {
             _mole = mole switch
             {
-                Game.Mole.Go => _mole1,
-                Game.Mole.NoGo => _mole2,
+                MoleType.Go => _mole1,
+                MoleType.NoGo => _mole2,
                 _ => throw new Exception($"No such mole '{mole}' to render")
             }; ;
         }

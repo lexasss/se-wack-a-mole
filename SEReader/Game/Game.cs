@@ -14,16 +14,6 @@ namespace SEReader.Game
             Visible
         }
 
-        public enum Mole
-        {
-            Go,
-            NoGo,
-        }
-
-        public Cell[] Cells => _cells.ToArray();
-
-        public bool IsRunning => _timer.Enabled;
-
         public Game(GameRenderer renderer)
         {
             _renderer = renderer;
@@ -43,7 +33,7 @@ namespace SEReader.Game
             _screenLogger = ScreenLogger.Create();
 
             _options.Changed += Options_Changed;
-            Options_Changed(null, Options.Option.General);
+            Options_Changed(null, Options.Option.Game);
         }
 
         public void Start()
@@ -62,8 +52,7 @@ namespace SEReader.Game
             _renderer.SetFocusVisibility(TargetVisibility.Hidden);
             _renderer.SetShotVisibility(TargetVisibility.Hidden);
 
-            _moleX = -1;
-            _moleY = -1;
+            _mole.Reset();
             _score = 0;
 
             _focusedCell = null;
@@ -140,7 +129,6 @@ namespace SEReader.Game
 
         readonly List<Cell> _cells = new();
         readonly Timer _timer = new();
-        readonly Random _random = new();
         readonly FlowLogger _logger = FlowLogger.Instance;
         readonly Options _options = Options.Instance;
         readonly ScreenLogger _screenLogger;
@@ -149,29 +137,28 @@ namespace SEReader.Game
         Cell _focusedCell = null;
         Cell _shotCell = null;
 
-        bool _isMoleVisible = false;
-        int _moleX = -1;
-        int _moleY = -1;
+        Mole _mole = new Mole();
         int _score = 0;
-        Mole _mole = Mole.Go;
 
         private void ReverseMoleVisibility()
         {
-            _isMoleVisible = !_isMoleVisible;
-
-            _moleX = _isMoleVisible ? (int)(_random.NextDouble() * _options.CellX) : -1;
-            _moleY = _isMoleVisible ? (int)(_random.NextDouble() * _options.CellY) /*2*/ : -1;
-            var moleVisibility = _isMoleVisible ? TargetVisibility.Visible : TargetVisibility.Hidden;
-
-            if (_isMoleVisible)
+            if (_mole.IsVisible)
             {
-                _mole = _options.GoNoGo && _random.NextDouble() < _options.NoGoProbability ? Mole.NoGo : Mole.Go;
-                _renderer.SetMole(_mole);
+                _cells[_mole.Y * _options.CellX + _mole.X].CanBeActivated = false;
             }
 
-            _renderer.SetMoleVisibility(moleVisibility, _moleX, _moleY);
+            _mole.ReverseVisibility();
 
-            _logger.Add(LogSource.Experiment, "mole", moleVisibility.ToString(), $"{_moleX},{_moleY}", _mole.ToString().ToLower());
+            if (_mole.IsVisible)
+            {
+                _cells[_mole.CellIndex].CanBeActivated = true;
+                _renderer.SetMole(_mole.Type);
+            }
+
+            var moleVisibility = _mole.IsVisible ? TargetVisibility.Visible : TargetVisibility.Hidden;
+            _renderer.SetMoleVisibility(moleVisibility, _mole.X, _mole.Y);
+
+            _logger.Add(LogSource.Experiment, "mole", moleVisibility.ToString(), $"{_mole.X},{_mole.Y}", _mole.Type.ToString().ToLower());
         }
 
         private void Cell_ActivationChanged(object sender, Cell.Activity e)
@@ -183,11 +170,11 @@ namespace SEReader.Game
                 _renderer.SetShotVisibility(TargetVisibility.Visible, cell.X, cell.Y);
                 _shotCell = cell;
 
-                if (_moleX == cell.X && _moleY == cell.Y)
+                if (_mole.X == cell.X && _mole.Y == cell.Y)   // we shot the mole!
                 {
                     ReverseMoleVisibility();
 
-                    if (_mole == Mole.Go)
+                    if (_mole.Type == MoleType.Go)
                     {
                         _score += _options.PointsPerMole;
                     }
@@ -212,7 +199,7 @@ namespace SEReader.Game
 
         private void Timer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            if (_random.NextDouble() < _options.MoleEventRate)
+            if (_mole.IsTimeToReverseVisibility)
             {
                 ReverseMoleVisibility();
             }

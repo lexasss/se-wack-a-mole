@@ -21,7 +21,7 @@ namespace SEReader.Game
             _lowPassFilter = new LowPassFilter(_options.ScreenWidth / _options.CellX * 0.7);
 
             _options.Changed += Options_Changed;
-            Options_Changed(null, Options.Option.General);
+            Options_Changed(null, Options.Option.Controller);
         }
 
         // Internal

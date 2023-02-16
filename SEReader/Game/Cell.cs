@@ -17,6 +17,8 @@ namespace SEReader.Game
         public int Y { get; }
         public bool IsFocused => _isFocused;
 
+        public bool CanBeActivated { get; set; } = false;
+
         /// <summary>
         /// Fires when the cell is activated after its couner reaches the dwell-time, or the counter is reset
         /// </summary>
@@ -42,8 +44,6 @@ namespace SEReader.Game
 
         public void Shoot()
         {
-            //_isActivated = false;
-            //_attentionCounter = _options.DwellTime - 1;
             _attentionCounter = _options.DwellTime + _options.ShotDuration;
             _isActivated = true;
 
@@ -83,7 +83,7 @@ namespace SEReader.Game
                 }
                 else if (_attentionCounter < _options.DwellTime)
                 {
-                    if (_options.Controller == Controller.Gaze)
+                    if (_options.Controller == Controller.Gaze && CanBeActivated)
                     {
                         IncreaseAttentionCounter(interval);
                     }

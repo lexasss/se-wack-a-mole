@@ -32,8 +32,6 @@ namespace SEReader.Logging
 
         public static HashSet<Target> Enabled = new()
         {
-            Target.DataSource,
-            Target.LowPassFilter,
         };
 
         public static void Initialize(TextBox output)
