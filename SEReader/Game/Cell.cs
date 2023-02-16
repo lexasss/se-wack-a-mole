@@ -1,13 +1,13 @@
 ﻿using SEReader.Logging;
 using SEReader.Utils;
 using System;
-using System.Diagnostics;
 
 namespace SEReader.Game
 {
+    [AllowScreenLog(ScreenLogger.Target.Cell)]
     public class Cell : ITickUpdatable
     {
-        public enum Activity
+        public enum State
         {
             Active,
             Inactive
@@ -22,38 +22,31 @@ namespace SEReader.Game
         /// <summary>
         /// Fires when the cell is activated after its couner reaches the dwell-time, or the counter is reset
         /// </summary>
-        public event EventHandler<Activity> ActivationChanged;
+        public event EventHandler<State> ActivationChanged;
 
         public Cell(int x, int y)
         {
             X = x;
             Y = y;
 
+            _screenLogger = ScreenLogger.Create();
+
             TickTimer.Add(this);
         }
 
-        public bool Matches(int x, int y) => X == x && Y == y;
+        public bool IsAt(int x, int y) => X == x && Y == y;
 
         public void SetFocus()
         {
-            _logger.Add(LogSource.Experiment, "cell", "focused", $"{Y},{X}");
-            Debug.WriteLine($"{Y}/{X} focused");
+            _logger.Add(LogSource.Game, "cell", "focused", $"{Y},{X}");
+            _screenLogger.Log($"{Y}/{X} focused");
 
             _isFocused = true;
         }
 
-        public void Shoot()
-        {
-            _attentionCounter = _options.DwellTime + _options.ShotDuration;
-            _isActivated = true;
-
-            _logger.Add(LogSource.Experiment, "cell", "shot-on", $"{Y},{X}");
-            ActivationChanged.Invoke(this, Activity.Active);
-        }
-
         public void RemoveFocus()
         {
-            Debug.WriteLine($"{Y}/{X} left");
+            _screenLogger.Log($"{Y}/{X} left");
             _isFocused = false;
 
             if (_isActivated)
@@ -61,9 +54,18 @@ namespace SEReader.Game
                 _isActivated = false;
                 _attentionCounter = 0;
 
-                _logger.Add(LogSource.Experiment, "cell", "target-off", $"{Y},{X}");
-                ActivationChanged.Invoke(this, Activity.Inactive);
+                _logger.Add(LogSource.Game, "cell", "off", $"{Y},{X}");
+                ActivationChanged.Invoke(this, State.Inactive);
             }
+        }
+
+        public void Shoot()
+        {
+            _attentionCounter = _options.DwellTime + _options.ShotDuration;
+            _isActivated = true;
+
+            _logger.Add(LogSource.Game, "cell", "shot-on", $"{Y},{X}");
+            ActivationChanged.Invoke(this, State.Active);
         }
 
         public void Reset()
@@ -73,6 +75,11 @@ namespace SEReader.Game
             _attentionCounter = 0;
         }
 
+        /// <summary>
+        /// Implementation of ITickUpdatable.
+        /// DO NOT CALL IT EXPLICITELY!
+        /// </summary>
+        /// <param name="interval">time passed form the previous tick</param>
         public void Tick(int interval)
         {
             if (_isFocused)
@@ -103,6 +110,7 @@ namespace SEReader.Game
 
         readonly FlowLogger _logger = FlowLogger.Instance;
         readonly Options _options = Options.Instance;
+        readonly ScreenLogger _screenLogger;
 
         int _attentionCounter = 0;
         bool _isFocused = false;
@@ -116,8 +124,8 @@ namespace SEReader.Game
             {
                 _attentionCounter = 0;
 
-                _logger.Add(LogSource.Experiment, "cell", "shot-off", $"{Y},{X}");
-                ActivationChanged.Invoke(this, Activity.Inactive);
+                _logger.Add(LogSource.Game, "cell", "shot-off", $"{Y},{X}");
+                ActivationChanged.Invoke(this, State.Inactive);
             }
         }
 

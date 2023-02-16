@@ -14,7 +14,7 @@ namespace SEReader.Comm
                 {
                     if (!GenerateConsoleCtrlEvent(CTRL_C_EVENT, 0))
                     {
-                        Debug.WriteLine("Opps...");
+                        Debug.WriteLine("Oops...");
                     }
                     p.WaitForExit();
                 }

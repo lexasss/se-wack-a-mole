@@ -26,6 +26,7 @@ namespace SEReader.Logging
             GazePoint,
             LowPassFilter,
             Game,
+            Cell,
             Renderer,
             GazeController,
         }

@@ -10,6 +10,13 @@ namespace SEReader.Game
     [AllowScreenLog(ScreenLogger.Target.Renderer)]
     public class GameRenderer
     {
+        public enum Target
+        {
+            Mole,
+            Shot,
+            Focus
+        }
+
         public class CellClickedEventArgs : EventArgs
         {
             public int X { get; }
@@ -92,7 +99,7 @@ namespace SEReader.Game
             _mole = _mole1;
         }
 
-        public void SetMole(MoleType mole)
+        public void SetMoleType(MoleType mole)
         {
             _mole = mole switch
             {
@@ -102,49 +109,35 @@ namespace SEReader.Game
             }; ;
         }
 
-        public void SetMoleVisibility(Game.TargetVisibility visibility, int x = -1, int y = -1)
+        public void Show(Target target, int x, int y)
         {
+            var img = target switch
+            {
+                Target.Shot => _shot,
+                Target.Mole => _mole,
+                Target.Focus => _focus,
+                _ => throw new Exception($"Unknown target '{target}' to show/hide")
+            };
+
             _dispatcher.Invoke(() =>
             {
-                if (visibility == Game.TargetVisibility.Visible)
-                {
-                    Show(_mole, x, y);
-                    //_storyboard.Begin(_grid);
-                }
-                else
-                {
-                    Hide(_mole);
-                }
+                Show(img, x, y);
             });
         }
 
-        public void SetShotVisibility(Game.TargetVisibility visibility, int x = -1, int y = -1)
+        public void Hide(Target target)
         {
-            _dispatcher.Invoke(() =>
+            var img = target switch
             {
-                if (visibility == Game.TargetVisibility.Visible)
-                {
-                    Show(_shot, x, y);
-                }
-                else
-                {
-                    Hide(_shot);
-                }
-            });
-        }
+                Target.Shot => _shot,
+                Target.Mole => _mole,
+                Target.Focus => _focus,
+                _ => throw new Exception($"Unknown target '{target}' to show/hide")
+            };
 
-        public void SetFocusVisibility(Game.TargetVisibility visibility, int x = -1, int y = -1)
-        {
             _dispatcher.Invoke(() =>
             {
-                if (visibility == Game.TargetVisibility.Visible)
-                {
-                    Show(_focus, x, y);
-                }
-                else
-                {
-                    Hide(_focus);
-                }
+                Hide(img);
             });
         }
 

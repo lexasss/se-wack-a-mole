@@ -8,7 +8,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using SEReader.Comm;
-using SEReader.Experiment;
+using SEReader.Tracker;
 using SEReader.Game;
 using SEReader.Logging;
 
@@ -44,8 +44,9 @@ namespace SEReader
         readonly Game.Game _game;
         readonly GameRenderer _gameRenderer;
         readonly MouseController _mouseController;
-        readonly Observer _gazeController;
-        readonly Observer _leftMirror = new Mirror("LeftScreen");
+        readonly GazeController _gazeController;
+        readonly Plane _leftMirror = new Mirror("Left");
+        readonly Plane _rightMirror = new Mirror("Right");
 
         readonly object _allContent;
 
@@ -175,15 +176,16 @@ namespace SEReader
             _parser.Feed(e);
         }
 
-        private void Parser_Sample(object _, Sample e)
+        private void Parser_PlaneEnter(object _, Intersection e)
         {
             Dispatcher.Invoke(() =>
             {
-                lblPlane.Content = string.Join(", ", e.Intersections.Select(intersection => intersection.PlaneName));
-                lblFrameID.Content = e.ID;
+                lblPlane.Content = e.PlaneName;
 
-                //_leftMirror.Feed(ref e);
-                _gazeController.Feed(ref e);
+                if (_gazeController.PlaneName == e.PlaneName)
+                {
+                    _gazeController.Notify(Plane.Event.PlaneEnter);
+                }
             });
         }
 
@@ -195,21 +197,20 @@ namespace SEReader
 
                 if (_gazeController.PlaneName == e)
                 {
-                    _gazeController.Notify(Observer.Event.PlaneExit);
+                    _gazeController.Notify(Plane.Event.PlaneExit);
                 }
             });
         }
 
-        private void Parser_PlaneEnter(object _, Intersection e)
+        private void Parser_Sample(object _, Sample e)
         {
             Dispatcher.Invoke(() =>
             {
-                lblPlane.Content = e.PlaneName;
+                lblPlane.Content = string.Join(", ", e.Intersections.Select(intersection => intersection.PlaneName));
+                lblFrameID.Content = e.ID;
 
-                if (_gazeController.PlaneName == e.PlaneName)
-                {
-                    _gazeController.Notify(Observer.Event.PlaneEnter);
-                }
+                //_leftMirror.Feed(ref e);
+                _gazeController.Feed(ref e);
             });
         }
 
@@ -281,7 +282,7 @@ namespace SEReader
                 {
                     _parser.Reset();
                     _game.Start();
-                    await Tests.GameController.Run(_gazeController as GazeController);
+                    await Tests.GameController.Run(_gazeController);
                     _game.Stop();
                 });
             }
@@ -291,7 +292,7 @@ namespace SEReader
                 {
                     _parser.Reset();
                     _game.Start();
-                    await Tests.LowPassFilter.Run(_gazeController as GazeController);
+                    await Tests.LowPassFilter.Run(_gazeController);
                     _game.Stop();
                 });
             }

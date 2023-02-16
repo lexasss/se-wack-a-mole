@@ -65,13 +65,13 @@ namespace SEReader.Game
             return _filteredPoint;
         }
 
-        public void Inform(Experiment.Observer.Event evt)
+        public void Inform(Tracker.Plane.Event evt)
         {
-            if (evt == Experiment.Observer.Event.PlaneExit)
+            if (evt == Tracker.Plane.Event.PlaneExit)
             {
                 _exitTimestamp = Timestamp.Ms;
             }
-            else if (evt == Experiment.Observer.Event.PlaneEnter)
+            else if (evt == Tracker.Plane.Event.PlaneEnter)
             {
                 if ((Timestamp.Ms - _exitTimestamp) > _options.LowPassFilterResetDelay)
                 {

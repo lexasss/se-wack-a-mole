@@ -1,8 +1,8 @@
 ﻿using SEReader.Comm;
 
-namespace SEReader.Experiment
+namespace SEReader.Tracker
 {
-    public abstract class Observer
+    public abstract class Plane
     {
         public enum Event
         {
@@ -15,7 +15,7 @@ namespace SEReader.Experiment
         public string PlaneName => _planeName;
 
 
-        public Observer(string planeName)
+        public Plane(string planeName)
         {
             _planeName = planeName;
         }

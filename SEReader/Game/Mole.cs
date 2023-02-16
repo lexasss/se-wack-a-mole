@@ -14,14 +14,19 @@ namespace SEReader.Game
         public int X { get; private set; } = -1;
         public int Y { get; private set; } = -1;
         public MoleType Type { get; private set; } = MoleType.Go;
+
         public int CellIndex => IsVisible ? Y * _options.CellX + X : -1;
         public bool IsTimeToReverseVisibility => _random.NextDouble() < _options.MoleEventRate;
+
+        public bool IsInCell(Cell cell) => X == cell.X && Y == cell.Y;
+
         public void Reset()
         {
             IsVisible = false;
             X = -1;
             Y = -1;
         }
+
         public void ReverseVisibility()
         {
             IsVisible = !IsVisible;

@@ -7,7 +7,7 @@ namespace SEReader.Tests
 {
     internal class GameController
     {
-        public static async Task Run(Experiment.Observer ctrl)
+        public static async Task Run(GazeController ctrl)
         {
             int count = 1000;
             bool isOnPlane = false;
@@ -58,10 +58,9 @@ namespace SEReader.Tests
 
                 var prob = isOnPlane ? 0.01 : 0.3;
                 if (random.NextDouble() < prob)
-                //if (!isOnPlane)
                 {
                     isOnPlane = !isOnPlane;
-                    ctrl.Notify(isOnPlane ? Experiment.Observer.Event.PlaneEnter : Experiment.Observer.Event.PlaneExit);
+                    ctrl.Notify(isOnPlane ? Tracker.Plane.Event.PlaneEnter : Tracker.Plane.Event.PlaneExit);
                 }
 
                 await Task.Delay(10);

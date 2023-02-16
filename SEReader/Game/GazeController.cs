@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace SEReader.Game
 {
     [AllowScreenLog(ScreenLogger.Target.GazeController)]
-    public class GazeController : Experiment.Observer
+    public class GazeController : Tracker.Plane
     {
         public GazeController(Game game, string screenName) : base(screenName)
         {

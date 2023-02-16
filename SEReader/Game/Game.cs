@@ -8,12 +8,6 @@ namespace SEReader.Game
     [AllowScreenLog(ScreenLogger.Target.Game)]
     public class Game
     {
-        public enum TargetVisibility
-        {
-            Hidden,
-            Visible
-        }
-
         public Game(GameRenderer renderer)
         {
             _renderer = renderer;
@@ -48,9 +42,9 @@ namespace SEReader.Game
             foreach (var cell in _cells)
                 cell.Reset();
 
-            _renderer.SetMoleVisibility(TargetVisibility.Hidden);
-            _renderer.SetFocusVisibility(TargetVisibility.Hidden);
-            _renderer.SetShotVisibility(TargetVisibility.Hidden);
+            _renderer.Hide(GameRenderer.Target.Mole);
+            _renderer.Hide(GameRenderer.Target.Focus);
+            _renderer.Hide(GameRenderer.Target.Shot);
 
             _mole.Reset();
             _score = 0;
@@ -70,7 +64,7 @@ namespace SEReader.Game
 
             if (_shotCell != null)
             {
-                _renderer.SetShotVisibility(TargetVisibility.Hidden);
+                _renderer.Hide(GameRenderer.Target.Shot);
                 _shotCell = null;
             }
         }
@@ -94,7 +88,7 @@ namespace SEReader.Game
                     _screenLogger?.Log("focus removed");
                 }
             }
-            else if (!_focusedCell?.Matches(x, y) ?? true)
+            else if (!_focusedCell?.IsAt(x, y) ?? true)
             {
                 hasChanged = true;
                 _focusedCell?.RemoveFocus();
@@ -108,9 +102,10 @@ namespace SEReader.Game
 
             if (hasChanged)
             {
-                _renderer.SetFocusVisibility(
-                    _focusedCell == null ? TargetVisibility.Hidden : TargetVisibility.Visible,
-                    _focusedCell?.X ?? -1, _focusedCell?.Y ?? -1);
+                if (_focusedCell == null)
+                    _renderer.Hide(GameRenderer.Target.Focus);
+                else
+                    _renderer.Show(GameRenderer.Target.Focus, _focusedCell.X, _focusedCell.Y);
             }
         }
 
@@ -152,25 +147,27 @@ namespace SEReader.Game
             if (_mole.IsVisible)
             {
                 _cells[_mole.CellIndex].CanBeActivated = true;
-                _renderer.SetMole(_mole.Type);
+                _renderer.SetMoleType(_mole.Type);
+                _renderer.Show(GameRenderer.Target.Mole, _mole.X, _mole.Y);
+            }
+            else
+            {
+                _renderer.Hide(GameRenderer.Target.Mole);
             }
 
-            var moleVisibility = _mole.IsVisible ? TargetVisibility.Visible : TargetVisibility.Hidden;
-            _renderer.SetMoleVisibility(moleVisibility, _mole.X, _mole.Y);
-
-            _logger.Add(LogSource.Experiment, "mole", moleVisibility.ToString(), $"{_mole.X},{_mole.Y}", _mole.Type.ToString().ToLower());
+            _logger.Add(LogSource.Game, "mole", _mole.IsVisible ? "shown" : "hidden", $"{_mole.X},{_mole.Y}", _mole.Type.ToString().ToLower());
         }
 
-        private void Cell_ActivationChanged(object sender, Cell.Activity e)
+        private void Cell_ActivationChanged(object sender, Cell.State e)
         {
             Cell cell = sender as Cell;
 
-            if (e == Cell.Activity.Active)
+            if (e == Cell.State.Active)
             {
-                _renderer.SetShotVisibility(TargetVisibility.Visible, cell.X, cell.Y);
+                _renderer.Show(GameRenderer.Target.Shot, cell.X, cell.Y);
                 _shotCell = cell;
 
-                if (_mole.X == cell.X && _mole.Y == cell.Y)   // we shot the mole!
+                if (_mole.IsInCell(cell))   // we shot the mole!
                 {
                     ReverseMoleVisibility();
 
@@ -183,7 +180,7 @@ namespace SEReader.Game
                         _score = Math.Max(0, _score - _options.PointsPerMole);
                     }
 
-                    _logger.Add(LogSource.Experiment, "score", _score.ToString());
+                    _logger.Add(LogSource.Game, "score", _score.ToString());
                     _renderer.SetScore(_score);
                 }
             }
@@ -191,7 +188,7 @@ namespace SEReader.Game
             {
                 if (_shotCell.X == cell.X && _shotCell.Y == cell.Y)
                 {
-                    _renderer.SetShotVisibility(TargetVisibility.Hidden);
+                    _renderer.Hide(GameRenderer.Target.Shot);
                     _shotCell = null;
                 }
             }

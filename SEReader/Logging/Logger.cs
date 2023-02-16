@@ -9,7 +9,7 @@ namespace SEReader.Logging
     public enum LogSource
     {
         Tracker = 1,
-        Experiment = 2,
+        Game = 2,
     }
 
     public enum SavingResult
