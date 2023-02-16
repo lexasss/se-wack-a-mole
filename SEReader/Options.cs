@@ -5,7 +5,7 @@ using System.Windows;
 
 namespace SEReader
 {
-    internal enum Controller
+    internal enum ControllerType
     {
         Gaze,
         Mouse,
@@ -101,7 +101,7 @@ namespace SEReader
             get => _focusLatency;
             set => Update(ref _focusLatency, value, Option.Controller);
         }
-        public Controller Controller
+        public ControllerType Controller
         {
             get => _controller;
             set => Update(ref _controller, value, Option.Controller);
@@ -167,7 +167,7 @@ namespace SEReader
         double _lowPassFilterGain = 0.01;
         double _lowPassFilterWeightDamping = 0.8;   // unconditional next-gaze-point (on screen) weihgt damping
         int _moleTimerInterval = 1000;              // ms
-        Controller _controller = Controller.Gaze;
+        ControllerType _controller = ControllerType.Gaze;
         IntersectionSource _intersectionSource = IntersectionSource.Gaze;
         bool _intersectionSourceFiltered = false;
         int _focusLatency = 500;                // ms

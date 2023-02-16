@@ -90,7 +90,7 @@ namespace SEReader.Game
                 }
                 else if (_attentionCounter < _options.DwellTime)
                 {
-                    if (_options.Controller == Controller.Gaze && CanBeActivated)
+                    if (_options.Controller == ControllerType.Gaze && CanBeActivated)
                     {
                         IncreaseAttentionCounter(interval);
                     }

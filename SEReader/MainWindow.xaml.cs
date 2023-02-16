@@ -30,7 +30,7 @@ namespace SEReader
 
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        public bool IsGazeController => (string)cmbController.SelectedItem == Controller.Gaze.ToString();
+        public bool IsGazeController => (string)cmbController.SelectedItem == ControllerType.Gaze.ToString();
         public bool IsGoNoGo => chkGoNoGo.IsChecked ?? false;
         public bool IsLowPassFilterEnabled => chkLowPassFilter.IsChecked ?? false;
 
@@ -47,6 +47,7 @@ namespace SEReader
         readonly GazeController _gazeController;
         readonly Plane _leftMirror = new Mirror("Left");
         readonly Plane _rightMirror = new Mirror("Right");
+        readonly PlaneCollection _planes = new();
 
         readonly object _allContent;
 
@@ -80,6 +81,12 @@ namespace SEReader
                 IsEnabled = false
             };
 
+            _planes.Add(
+                _gazeController,
+                _leftMirror,
+                _rightMirror
+            );
+
             KeyDown += MainWindow_KeyDown;
             Closing += MainWindow_Closing;
 
@@ -87,56 +94,78 @@ namespace SEReader
             txbHost.Text = settings.Host;
             txbPort.Text = settings.Port;
 
-            Utils.UIHelper.InitComboBox(cmbController, options.Controller, (value) => {
+            BindUIControls();
+
+            Options_Changed(options, Options.Option.Controller);
+        }
+
+        private void BindUIControls()
+        {
+            var options = Options.Instance;
+
+            Utils.UIHelper.InitComboBox(cmbController, options.Controller, (value) =>
+            {
                 options.Controller = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsGazeController)));
             });
-            Utils.UIHelper.InitComboBox(cmbSource, options.IntersectionSource, (value) => {
+            Utils.UIHelper.InitComboBox(cmbSource, options.IntersectionSource, (value) =>
+            {
                 options.IntersectionSource = value;
             });
-            Utils.UIHelper.InitCheckBox(chkSourceFiltered, options.IntersectionSourceFiltered, (value) => {
+            Utils.UIHelper.InitCheckBox(chkSourceFiltered, options.IntersectionSourceFiltered, (value) =>
+            {
                 options.IntersectionSourceFiltered = value;
             });
-            Utils.UIHelper.InitCheckBox(chkGoNoGo, options.GoNoGo, (value) => {
+            Utils.UIHelper.InitCheckBox(chkGoNoGo, options.GoNoGo, (value) =>
+            {
                 options.GoNoGo = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsGoNoGo)));
             });
-            Utils.UIHelper.InitTextBox(txbDwellTime, options.DwellTime, (value) => {
+            Utils.UIHelper.InitTextBox(txbDwellTime, options.DwellTime, (value) =>
+            {
                 options.DwellTime = value;
             });
-            Utils.UIHelper.InitCheckBox(chkLowPassFilter, options.LowPassFilterEnabled, (value) => {
+            Utils.UIHelper.InitCheckBox(chkLowPassFilter, options.LowPassFilterEnabled, (value) =>
+            {
                 options.LowPassFilterEnabled = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsLowPassFilterEnabled)));
             });
-            Utils.UIHelper.InitTextBox(txbLowPassFilterGain, options.LowPassFilterGain, (value) => {
+            Utils.UIHelper.InitTextBox(txbLowPassFilterGain, options.LowPassFilterGain, (value) =>
+            {
                 options.LowPassFilterGain = value;
             });
-            Utils.UIHelper.InitTextBox(txbLowPassFilterResetDelay, options.LowPassFilterResetDelay, (value) => {
+            Utils.UIHelper.InitTextBox(txbLowPassFilterResetDelay, options.LowPassFilterResetDelay, (value) =>
+            {
                 options.LowPassFilterResetDelay = value;
             });
-            Utils.UIHelper.InitTextBox(txbFocusedCellExpansion, options.FocusedCellExpansion, (value) => {
+            Utils.UIHelper.InitTextBox(txbFocusedCellExpansion, options.FocusedCellExpansion, (value) =>
+            {
                 options.FocusedCellExpansion = value;
             });
-            Utils.UIHelper.InitTextBox(txbMoleTimerInterval, options.MoleTimerInterval, (value) => {
+            Utils.UIHelper.InitTextBox(txbMoleTimerInterval, options.MoleTimerInterval, (value) =>
+            {
                 options.MoleTimerInterval = value;
             });
-            Utils.UIHelper.InitTextBox(txbMoleEventRate, options.MoleEventRate, (value) => {
+            Utils.UIHelper.InitTextBox(txbMoleEventRate, options.MoleEventRate, (value) =>
+            {
                 options.MoleEventRate = value;
             });
-            Utils.UIHelper.InitTextBox(txbLPFWeightDamping, options.LowPassFilterWeightDamping, (value) => {
+            Utils.UIHelper.InitTextBox(txbLPFWeightDamping, options.LowPassFilterWeightDamping, (value) =>
+            {
                 options.LowPassFilterWeightDamping = value;
             });
-            Utils.UIHelper.InitTextBox(txbFocusLatency, options.FocusLatency, (value) => {
+            Utils.UIHelper.InitTextBox(txbFocusLatency, options.FocusLatency, (value) =>
+            {
                 options.FocusLatency = value;
             });
-            Utils.UIHelper.InitTextBox(txbNoGoProbability, options.NoGoProbability, (value) => {
+            Utils.UIHelper.InitTextBox(txbNoGoProbability, options.NoGoProbability, (value) =>
+            {
                 options.NoGoProbability = value;
             });
-            Utils.UIHelper.InitTextBox(txbShotDuration, options.ShotDuration, (value) => {
+            Utils.UIHelper.InitTextBox(txbShotDuration, options.ShotDuration, (value) =>
+            {
                 options.ShotDuration = value;
             });
-
-            Options_Changed(options, Options.Option.Controller);
         }
 
         private void SaveLoggedData()
@@ -156,8 +185,8 @@ namespace SEReader
             if (e == Options.Option.Controller)
             {
                 var options = (Options)sender;
-                _gazeController.IsEnabled = options.Controller == Controller.Gaze;
-                _mouseController.IsEnabled = options.Controller == Controller.Mouse;
+                _gazeController.IsEnabled = options.Controller == ControllerType.Gaze;
+                _mouseController.IsEnabled = options.Controller == ControllerType.Mouse;
                 _game.ClearFocus();
             }
         }
@@ -181,11 +210,7 @@ namespace SEReader
             Dispatcher.Invoke(() =>
             {
                 lblPlane.Content = e.PlaneName;
-
-                if (_gazeController.PlaneName == e.PlaneName)
-                {
-                    _gazeController.Notify(Plane.Event.PlaneEnter);
-                }
+                _planes.Notify(Plane.Event.Enter, e.PlaneName);
             });
         }
 
@@ -194,11 +219,7 @@ namespace SEReader
             Dispatcher.Invoke(() =>
             {
                 lblPlane.Content = "";
-
-                if (_gazeController.PlaneName == e)
-                {
-                    _gazeController.Notify(Plane.Event.PlaneExit);
-                }
+                _planes.Notify(Plane.Event.Exit, e);
             });
         }
 
@@ -206,7 +227,7 @@ namespace SEReader
         {
             Dispatcher.Invoke(() =>
             {
-                lblPlane.Content = string.Join(", ", e.Intersections.Select(intersection => intersection.PlaneName));
+                //lblPlane.Content = string.Join(", ", e.Intersections.Select(intersection => intersection.PlaneName));
                 lblFrameID.Content = e.ID;
 
                 //_leftMirror.Feed(ref e);

@@ -69,7 +69,7 @@ namespace SEReader.Game
             _cancelWaiting?.Cancel();
             _cancelWaiting = null;
 
-            if (evt == Event.PlaneExit)
+            if (evt == Event.Exit)
             {
                 _cancelWaiting = new CancellationTokenSource();
                 _screenLogger.Log($"{Timestamp.Ms} plane exit");

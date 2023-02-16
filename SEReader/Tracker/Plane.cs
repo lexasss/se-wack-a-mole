@@ -6,8 +6,8 @@ namespace SEReader.Tracker
     {
         public enum Event
         {
-            PlaneEnter,
-            PlaneExit
+            Enter,
+            Exit
         }
 
         public bool IsEnabled { get; set; } = true;

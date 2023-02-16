@@ -67,11 +67,11 @@ namespace SEReader.Game
 
         public void Inform(Tracker.Plane.Event evt)
         {
-            if (evt == Tracker.Plane.Event.PlaneExit)
+            if (evt == Tracker.Plane.Event.Exit)
             {
                 _exitTimestamp = Timestamp.Ms;
             }
-            else if (evt == Tracker.Plane.Event.PlaneEnter)
+            else if (evt == Tracker.Plane.Event.Enter)
             {
                 if ((Timestamp.Ms - _exitTimestamp) > _options.LowPassFilterResetDelay)
                 {
