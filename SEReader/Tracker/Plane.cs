@@ -29,17 +29,11 @@ namespace SEReader.Tracker
             HandleEvent(evt);
         }
 
-        public void Feed(ref Sample sample)
+        public void Feed(Intersection intersection)
         {
             if (!IsEnabled) return;
 
-            foreach (var i in sample.Intersections)
-            {
-                if (i.PlaneName == _planeName)
-                {
-                    HandleIntersection(i);
-                }
-            }
+            HandleIntersection(intersection);
         }
 
         // Internal

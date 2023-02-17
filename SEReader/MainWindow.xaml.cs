@@ -230,8 +230,7 @@ namespace SEReader
                 //lblPlane.Content = string.Join(", ", e.Intersections.Select(intersection => intersection.PlaneName));
                 lblFrameID.Content = e.ID;
 
-                //_leftMirror.Feed(ref e);
-                _gazeController.Feed(ref e);
+                _planes.Feed(ref e);
             });
         }
 
@@ -303,7 +302,7 @@ namespace SEReader
                 {
                     _parser.Reset();
                     _game.Start();
-                    await Tests.GameController.Run(_gazeController);
+                    await Tests.GazeController.Run(_gazeController);
                     _game.Stop();
                 });
             }

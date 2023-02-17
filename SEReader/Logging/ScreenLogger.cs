@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SEReader.Utils;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Controls;
@@ -20,15 +21,11 @@ namespace SEReader.Logging
     {
         public enum Target
         {
-            General,
-            DataSource,
-            Parser,
-            GazePoint,
-            LowPassFilter,
-            Game,
-            Cell,
-            Renderer,
-            GazeController,
+            DataSource,     // outputs only in testing mode; silent in ordinal conditions
+            Parser,         // plane enter/exit events
+            LowPassFilter,  // outputs each point + Reset event
+            Game,           // cell focused/unfocused events
+            GazeController, // plane enter/exit events
         }
 
         public static HashSet<Target> Enabled = new()
@@ -47,9 +44,9 @@ namespace SEReader.Logging
 
         public static ScreenLogger Create(Target? target = null)
         {
-            if (target != null)
+            if (target is Target t)
             {
-                return new ScreenLogger(target ?? Target.General);
+                return new ScreenLogger(t);
             }
 
             StackTrace stackTrace = new StackTrace();
@@ -94,7 +91,7 @@ namespace SEReader.Logging
 
             private void PrintSafe(Target target, string message)
             {
-                _output.Text += $"\n[{target}] {message}";
+                _output.Text += $"\n[{target} : {Timestamp.Ms}] {message}";
                 _output.ScrollToEnd();
             }
         }

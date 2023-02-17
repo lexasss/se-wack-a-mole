@@ -85,7 +85,6 @@ namespace SEReader.Game
                     hasChanged = true;
                     _focusedCell.RemoveFocus();
                     _focusedCell = null;
-                    _screenLogger?.Log("focus removed");
                 }
             }
             else if (!_focusedCell?.IsAt(x, y) ?? true)
@@ -95,13 +94,14 @@ namespace SEReader.Game
 
                 _focusedCell = _cells.Find(cell => cell.X == x && cell.Y == y);
                 _focusedCell?.SetFocus();
-                _screenLogger?.Log(_focusedCell == null ?
-                    "focus removed" :
-                    $"{_focusedCell.X} {_focusedCell.Y}");
             }
 
             if (hasChanged)
             {
+                _screenLogger?.Log(_focusedCell == null ?
+                    "unfocused" :
+                    $"focused {_focusedCell.X} {_focusedCell.Y}");
+
                 if (_focusedCell == null)
                     _renderer.Hide(GameRenderer.Target.Focus);
                 else

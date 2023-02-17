@@ -1,6 +1,5 @@
 ﻿using SEReader.Comm;
 using SEReader.Game;
-using SEReader.Utils;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
@@ -9,7 +8,7 @@ namespace SEReader.Tests
 {
     internal class LowPassFilter
     {
-        public static async Task Run(GazeController gazeController)
+        public static async Task Run(Game.GazeController gazeController)
         {
             string filename = "test-data-gazepoint.txt";
             if (!File.Exists(filename))
@@ -19,13 +18,6 @@ namespace SEReader.Tests
             }
 
             string screenName = Options.Instance.ScreenName;
-
-            Sample sample = new Sample()
-            {
-                ID = 1,
-                TimeStamp = Timestamp.Ms,
-                Intersections = new System.Collections.Generic.List<Intersection>(),
-            };
 
             using (var stream = new StreamReader(filename))
             {
@@ -37,27 +29,24 @@ namespace SEReader.Tests
 
                     var p = line.Split('\t');
 
-                    sample.Intersections = new System.Collections.Generic.List<Intersection>()
+                    var intersection = new Intersection()
                     {
-                        new Intersection()
+                        ID = 1,
+                        PlaneName = screenName,
+                        Gaze = new Point3D()
                         {
-                            ID = 1,
-                            PlaneName = screenName,
-                            Gaze = new Point3D()
-                            {
-                                X = 0,
-                                Y = 0,
-                                Z = 0,
-                            },
-                            Point = new Point2D()
-                            {
-                                X = int.Parse(p[0]),
-                                Y = int.Parse(p[1])
-                            }
+                            X = 0,
+                            Y = 0,
+                            Z = 0,
+                        },
+                        Point = new Point2D()
+                        {
+                            X = int.Parse(p[0]),
+                            Y = int.Parse(p[1])
                         }
                     };
 
-                    gazeController.Feed(ref sample);
+                    gazeController.Feed(intersection);
 
                     await Task.Delay(1);
                 }

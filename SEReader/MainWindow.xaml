@@ -87,7 +87,7 @@
                 <StackPanel Orientation="Horizontal"
                             IsEnabled="{Binding IsLowPassFilterEnabled}">
                     <Label Style="{StaticResource FieldLabel}"
-                           Content="reset delay"
+                           Content="reset delay, ms"
                            HorizontalContentAlignment="Right"/>
                     <TextBox x:Name="txbLowPassFilterResetDelay"/>
                 </StackPanel>
@@ -142,6 +142,15 @@
                     Padding="12px"
                     Content="Start"
                     Click="StartStop_Click"/>
+            <TextBlock>
+                <Run>Tests:</Run><LineBreak/>
+                <Run>F5 - DataSource</Run><LineBreak/>
+                <Run>F6 - Parser from *-socketclient2.txt</Run><LineBreak/>
+                <Run>Shift + F6 - Parser (quick mode)</Run><LineBreak/>
+                <Run>F7 - start/stop MouseController</Run><LineBreak/>
+                <Run>F8 - GazeController (1000 samples)</Run><LineBreak/>
+                <Run>F9 - LowPassFilter from *-gazepoint.txt</Run><LineBreak/>
+            </TextBlock>
             <Label x:Name="lblDebug"
                     Content="Debug"
                     Visibility="Collapsed"
@@ -153,7 +162,7 @@
             <TabItem Header="Log">
                 <TextBox Grid.Row="1" x:Name="txbOutput"
                          VerticalScrollBarVisibility="Auto"
-                         VerticalAlignment="Top"
+                         VerticalAlignment="Stretch"
                          Text="Output: "/>
             </TabItem>
             <TabItem Header="Plane">

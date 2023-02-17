@@ -7,7 +7,6 @@ using System.Windows.Threading;
 
 namespace SEReader.Game
 {
-    [AllowScreenLog(ScreenLogger.Target.Renderer)]
     public class GameRenderer
     {
         public enum Target
@@ -33,7 +32,6 @@ namespace SEReader.Game
             _score = score;
 
             _dispatcher = Dispatcher.CurrentDispatcher;
-            _screenLogger = ScreenLogger.Create();
 
             for (int y = 0; y < _options.CellY; ++y)
                 grid.RowDefinitions.Add(new RowDefinition());
@@ -157,7 +155,6 @@ namespace SEReader.Game
         readonly Image _shot;
         readonly Image _focus;
         readonly Dispatcher _dispatcher;
-        readonly ScreenLogger _screenLogger;
         readonly Options _options = Options.Instance;
 
         Image _mole;

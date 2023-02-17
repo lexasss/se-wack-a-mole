@@ -4,7 +4,6 @@ using System;
 
 namespace SEReader.Game
 {
-    [AllowScreenLog(ScreenLogger.Target.Cell)]
     public class Cell : ITickUpdatable
     {
         public enum State
@@ -29,8 +28,6 @@ namespace SEReader.Game
             X = x;
             Y = y;
 
-            _screenLogger = ScreenLogger.Create();
-
             TickTimer.Add(this);
         }
 
@@ -39,14 +36,12 @@ namespace SEReader.Game
         public void SetFocus()
         {
             _logger.Add(LogSource.Game, "cell", "focused", $"{Y},{X}");
-            _screenLogger.Log($"{Y}/{X} focused");
 
             _isFocused = true;
         }
 
         public void RemoveFocus()
         {
-            _screenLogger.Log($"{Y}/{X} left");
             _isFocused = false;
 
             if (_isActivated)
@@ -110,7 +105,6 @@ namespace SEReader.Game
 
         readonly FlowLogger _logger = FlowLogger.Instance;
         readonly Options _options = Options.Instance;
-        readonly ScreenLogger _screenLogger;
 
         int _attentionCounter = 0;
         bool _isFocused = false;

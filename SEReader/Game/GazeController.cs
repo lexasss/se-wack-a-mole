@@ -1,13 +1,10 @@
 ﻿using SEReader.Comm;
-using SEReader.Logging;
-using SEReader.Utils;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace SEReader.Game
 {
-    [AllowScreenLog(ScreenLogger.Target.GazeController)]
     public class GazeController : Tracker.Plane
     {
         public GazeController(Game game, string screenName) : base(screenName)
@@ -15,8 +12,6 @@ namespace SEReader.Game
             _screenWidth = _options.ScreenWidth;
             _screenHeight = _options.ScreenHeight;
             _game = game;
-
-            _screenLogger = ScreenLogger.Create();
 
             _lowPassFilter = new LowPassFilter(_options.ScreenWidth / _options.CellX * 0.7);
 
@@ -31,7 +26,6 @@ namespace SEReader.Game
         readonly Game _game;
         readonly Options _options = Options.Instance;
         readonly LowPassFilter _lowPassFilter;
-        readonly ScreenLogger _screenLogger;
 
         CancellationTokenSource _cancelWaiting = null;
 
@@ -72,20 +66,14 @@ namespace SEReader.Game
             if (evt == Event.Exit)
             {
                 _cancelWaiting = new CancellationTokenSource();
-                _screenLogger.Log($"{Timestamp.Ms} plane exit");
                 Task.Delay(_options.FocusLatency, _cancelWaiting.Token).ContinueWith((arg) =>
                 {
                     if (!arg.IsCanceled)
                     {
-                        _screenLogger.Log($"{Timestamp.Ms} focus-off");
                         _cancelWaiting = null;
                         _game.ClearFocus();
                     }
                 });
-            }
-            else
-            {
-                _screenLogger.Log($"{Timestamp.Ms} plane enter");
             }
 
             _lowPassFilter.Inform(evt);

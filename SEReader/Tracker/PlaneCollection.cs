@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using SEReader.Comm;
+using System.Collections.Generic;
 
 namespace SEReader.Tracker
 {
@@ -18,6 +19,15 @@ namespace SEReader.Tracker
                     plane.Notify(evt);
                     break;
                 }
+            }
+        }
+
+        public void Feed(ref Sample sample)
+        {
+            foreach (var ints in sample.Intersections)
+            {
+                var plane = _planes.Find(plane => plane.PlaneName == ints.PlaneName);
+                plane?.Feed(ints);
             }
         }
 
