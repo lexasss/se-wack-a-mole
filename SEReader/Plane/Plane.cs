@@ -1,6 +1,6 @@
 ﻿using SEReader.Comm;
 
-namespace SEReader.Tracker
+namespace SEReader.Plane
 {
     public abstract class Plane
     {

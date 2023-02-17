@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace SEReader
+namespace SEReader.Plane
 {
     internal class PlaneRenderer
     {

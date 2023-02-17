@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace SEReader.Game
 {
-    public class GazeController : Tracker.Plane
+    public class GazeController : Plane.Plane
     {
         public GazeController(Game game, string screenName) : base(screenName)
         {

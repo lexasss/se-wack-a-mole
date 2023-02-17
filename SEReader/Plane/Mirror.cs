@@ -1,6 +1,6 @@
 ﻿using SEReader.Comm;
 
-namespace SEReader.Tracker
+namespace SEReader.Plane
 {
     internal class Mirror : Plane
     {

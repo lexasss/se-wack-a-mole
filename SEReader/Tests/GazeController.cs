@@ -68,7 +68,7 @@ namespace SEReader.Tests
                 if (random.NextDouble() < prob)
                 {
                     isOnPlane = !isOnPlane;
-                    ctrl.Notify(isOnPlane ? Tracker.Plane.Event.Enter : Tracker.Plane.Event.Exit);
+                    ctrl.Notify(isOnPlane ? Plane.Plane.Event.Enter : Plane.Plane.Event.Exit);
                 }
 
                 await Task.Delay(10);

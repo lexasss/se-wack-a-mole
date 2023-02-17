@@ -7,7 +7,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using SEReader.Comm;
-using SEReader.Tracker;
+using SEReader.Plane;
 using SEReader.Game;
 using SEReader.Logging;
 
@@ -44,8 +44,8 @@ namespace SEReader
         readonly GameRenderer _gameRenderer;
         readonly MouseController _mouseController;
         readonly GazeController _gazeController;
-        readonly Plane _leftMirror = new Mirror("Left");
-        readonly Plane _rightMirror = new Mirror("Right");
+        readonly Plane.Plane _leftMirror = new Mirror("Left");
+        readonly Plane.Plane _rightMirror = new Mirror("Right");
         readonly PlaneCollection _planes = new();
         readonly PlaneRenderer _planeRenderer;
 
@@ -218,7 +218,7 @@ namespace SEReader
             {
                 lblPlane.Content = e.PlaneName;
                 _planeRenderer.Enter(e.PlaneName);
-                _planes.Notify(Plane.Event.Enter, e.PlaneName);
+                _planes.Notify(Plane.Plane.Event.Enter, e.PlaneName);
             });
         }
 
@@ -228,7 +228,7 @@ namespace SEReader
             {
                 lblPlane.Content = "";
                 _planeRenderer.Exit(e);
-                _planes.Notify(Plane.Event.Exit, e);
+                _planes.Notify(Plane.Plane.Event.Exit, e);
             });
         }
 

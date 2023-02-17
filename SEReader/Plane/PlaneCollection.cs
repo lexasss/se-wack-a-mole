@@ -1,7 +1,7 @@
 ﻿using SEReader.Comm;
 using System.Collections.Generic;
 
-namespace SEReader.Tracker
+namespace SEReader.Plane
 {
     internal class PlaneCollection
     {
