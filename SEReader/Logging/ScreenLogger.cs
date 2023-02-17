@@ -25,11 +25,12 @@ namespace SEReader.Logging
             Parser,         // plane enter/exit events
             LowPassFilter,  // outputs each point + Reset event
             Game,           // cell focused/unfocused events
-            GazeController, // plane enter/exit events
         }
 
         public static HashSet<Target> Enabled = new()
         {
+            Target.Parser,
+            Target.Game,
         };
 
         public static void Initialize(TextBox output)

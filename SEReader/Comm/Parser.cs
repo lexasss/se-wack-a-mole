@@ -23,7 +23,7 @@ namespace SEReader.Comm
             _intersectionDataIndex = -1;
             _activeIntersections.Clear();
             _foundIntersections.Clear();
-            _frame.Intersections.Clear();
+            _sample.Intersections.Clear();
 
             var options = Options.Instance;
 
@@ -50,11 +50,11 @@ namespace SEReader.Comm
                 case State.Initial:
                     if (line.StartsWith(FRAME_NUMBER))
                     {
-                        _frame.ID = int.Parse(line[FRAME_NUMBER.Length..]);
+                        _sample.ID = int.Parse(line[FRAME_NUMBER.Length..]);
                     }
                     else if (line.StartsWith(TIME_STAMP))
                     {
-                        _frame.TimeStamp = long.Parse(line[TIME_STAMP.Length..]);
+                        _sample.TimeStamp = long.Parse(line[TIME_STAMP.Length..]);
                     }
                     else if (line.StartsWith(_intersectionSource))
                     {
@@ -140,12 +140,12 @@ namespace SEReader.Comm
         int _intersectionDataIndex = -1;
         Intersection _intersection = new();
 
-        Sample _frame = new() { Intersections = new List<Intersection>() }; // used as a buffer
+        Sample _sample = new() { Intersections = new List<Intersection>() }; // used as a buffer
 
         private void CreateIntersection()
         {
             _foundIntersections.Add(_intersection.PlaneName);
-            _frame.Intersections.Add(_intersection);
+            _sample.Intersections.Add(_intersection);
 
             if (!_activeIntersections.Contains(_intersection.PlaneName))
             {
@@ -156,7 +156,7 @@ namespace SEReader.Comm
 
         private void FinilizeFrame()
         {
-            if (_frame.ID != 0)
+            if (_sample.ID != 0)
             {
                 _activeIntersections.ExceptWith(_foundIntersections);
                 foreach (var name in _activeIntersections)
@@ -169,11 +169,11 @@ namespace SEReader.Comm
                 _activeIntersections.UnionWith(_foundIntersections);
                 _foundIntersections.Clear();
 
-                Sample?.Invoke(this, _frame);
+                Sample?.Invoke(this, _sample);
             }
 
-            _frame.ID = 0;
-            _frame.Intersections.Clear();
+            _sample.ID = 0;
+            _sample.Intersections.Clear();
         }
     }
 }

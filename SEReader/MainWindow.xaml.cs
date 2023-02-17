@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Globalization;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -48,6 +47,7 @@ namespace SEReader
         readonly Plane _leftMirror = new Mirror("Left");
         readonly Plane _rightMirror = new Mirror("Right");
         readonly PlaneCollection _planes = new();
+        readonly PlaneRenderer _planeRenderer;
 
         readonly object _allContent;
 
@@ -85,6 +85,13 @@ namespace SEReader
                 _gazeController,
                 _leftMirror,
                 _rightMirror
+            );
+
+            _planeRenderer = new(
+                stpLeftMirror,
+                stpRightMirror,
+                stpGame,
+                stpWindshield
             );
 
             KeyDown += MainWindow_KeyDown;
@@ -210,6 +217,7 @@ namespace SEReader
             Dispatcher.Invoke(() =>
             {
                 lblPlane.Content = e.PlaneName;
+                _planeRenderer.Enter(e.PlaneName);
                 _planes.Notify(Plane.Event.Enter, e.PlaneName);
             });
         }
@@ -219,6 +227,7 @@ namespace SEReader
             Dispatcher.Invoke(() =>
             {
                 lblPlane.Content = "";
+                _planeRenderer.Exit(e);
                 _planes.Notify(Plane.Event.Exit, e);
             });
         }
@@ -236,7 +245,7 @@ namespace SEReader
 
         // UI handlers
 
-        private void MainWindow_Closing(object _, System.ComponentModel.CancelEventArgs e)
+        private void MainWindow_Closing(object _, CancelEventArgs e)
         {
             var settings = Properties.Settings.Default;
             settings.Host = txbHost.Text;
@@ -286,7 +295,7 @@ namespace SEReader
                         _gameTestCancellation = new CancellationTokenSource();
 
                         try { await Task.Delay(-1, _gameTestCancellation.Token); }
-                        catch (Exception ex) { }
+                        catch (Exception) { }
                         finally { _game.Stop(); }
                     }
                     else
@@ -353,6 +362,7 @@ namespace SEReader
                 stpSettings.IsEnabled = false;
                 btnStartStop.Content = "Interrupt";
 
+                _planeRenderer.Reset();
                 _parser.Reset();
                 _dataSource.Start(txbHost.Text, txbPort.Text, Tests.Setup.IsDebugging);
                 _game.Start();

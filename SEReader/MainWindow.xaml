@@ -28,6 +28,17 @@
         <Style TargetType="Separator">
             <Setter Property="Margin" Value="4,8"/>
         </Style>
+        <Style x:Key="Plane" TargetType="Label">
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="BorderBrush" Value="Red"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+        <Style x:Key="Counter" TargetType="Label">
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
     </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -170,14 +181,65 @@
                     <Label x:Name="lblFrameID"
                            Content="0"
                            HorizontalContentAlignment="Center"/>
-                    <Label x:Name="lblPlane"
-                           Content=""
-                           Margin="24px"
-                           FontSize="20"
-                           BorderBrush="Red"
-                           BorderThickness="{Binding Content, RelativeSource={RelativeSource Self}, Converter={StaticResource op2bw}, Mode=OneWay}"
-                           HorizontalContentAlignment="Center"
-                           VerticalContentAlignment="Center"/>
+                    <Label x:Name="lblPlane" Style="{StaticResource Plane}"
+                           Margin="24"
+                           BorderThickness="{Binding Content, RelativeSource={RelativeSource Self}, Converter={StaticResource op2bw}, Mode=OneWay}"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="World">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="2*"/>
+                        <RowDefinition Height="1*"/>
+                    </Grid.RowDefinitions>
+                    <StackPanel Grid.Row="1" Grid.Column="0" x:Name="stpLeftMirror"
+                                VerticalAlignment="Center"
+                                Margin="8"
+                                Tag="LeftMirror"
+                                Background="Bisque">
+                        <Label Style="{StaticResource Plane}"
+                               Content="Left mirror"/>
+                        <Label x:Name="lblLeftMirrorCounter"
+                               Style="{StaticResource Counter}"
+                               Content="0"/>
+                    </StackPanel>
+                    <StackPanel Grid.Row="1" Grid.Column="3" x:Name="stpRightMirror"
+                                VerticalAlignment="Center"
+                                Margin="8"
+                                Tag="RightMirror"
+                                Background="Bisque">
+                        <Label Style="{StaticResource Plane}"
+                               Content="Right mirror"/>
+                        <Label x:Name="lblRightMirrorCounter"
+                               Style="{StaticResource Counter}"
+                               Content="0"/>
+                    </StackPanel>
+                    <StackPanel Grid.Row="1" Grid.Column="1" x:Name="stpGame"
+                                Margin="8"
+                                Tag="LeftScreen"
+                                Background="Bisque">
+                        <Label Style="{StaticResource Plane}"
+                                Content="Game"/>
+                        <Label x:Name="lblGameCounter"
+                                Style="{StaticResource Counter}"
+                                Content="0"/>
+                    </StackPanel>
+                    <StackPanel Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" x:Name="stpWindshield"
+                                Margin="8"
+                                Tag="Windshield"
+                                Background="Bisque">
+                        <Label Style="{StaticResource Plane}"
+                                Content="Windshield"/>
+                        <Label x:Name="lblWindshieldCounter"
+                                Style="{StaticResource Counter}"
+                                Content="0"/>
+                    </StackPanel>
                 </Grid>
             </TabItem>
             <TabItem Header="Game">
