@@ -130,6 +130,16 @@ namespace SEReader
             get => _intersectionSourceFiltered;
             set => Update(ref _intersectionSourceFiltered, value, Option.Parser);
         }
+        public bool UseGazeQualityMeasurement
+        {
+            get => _useGazeQualityMeasurement;
+            set => Update(ref _useGazeQualityMeasurement, value, Option.Parser);
+        }
+        public double GazeQualityThreshold
+        {
+            get => _gazeQualityThreshold;
+            set => Update(ref _gazeQualityThreshold, value, Option.Parser);
+        }
 
         // Load/Save
 
@@ -176,6 +186,8 @@ namespace SEReader
         double _currentCellExpansion = 0.1;     // share of the cell size
         int _shotDuration = 200;                // ms
         double _moleEventRate = 0.5;            // 0..1
+        bool _useGazeQualityMeasurement = false;
+        double _gazeQualityThreshold = 0.5;
 
         private void Update<T>(ref T member, T value, Option option = Option.General)
         {

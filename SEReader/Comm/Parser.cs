@@ -13,6 +13,7 @@ namespace SEReader.Comm
 
         public Parser()
         {
+            _options = Options.Instance;
             _screenLogger = ScreenLogger.Create();
             _intersectionSource = CLOSEST_WORLD_INTERSECTION;
         }
@@ -25,9 +26,7 @@ namespace SEReader.Comm
             _foundIntersections.Clear();
             _sample.Intersections.Clear();
 
-            var options = Options.Instance;
-
-            _intersectionSource = (options.IntersectionSource, options.IntersectionSourceFiltered) switch
+            _intersectionSource = (_options.IntersectionSource, _options.IntersectionSourceFiltered) switch
             {
                 (IntersectionSource.Gaze, false) => CLOSEST_WORLD_INTERSECTION,
                 (IntersectionSource.Gaze, true) => FILTERED_CLOSEST_WORLD_INTERSECTION,
@@ -55,6 +54,10 @@ namespace SEReader.Comm
                     else if (line.StartsWith(TIME_STAMP))
                     {
                         _sample.TimeStamp = long.Parse(line[TIME_STAMP.Length..]);
+                    }
+                    else if (line.StartsWith(GAZE_DIRECTION_QUALITY))
+                    {
+                        _gazeDirectionQuality = double.Parse(line[GAZE_DIRECTION_QUALITY.Length..]);
                     }
                     else if (line.StartsWith(_intersectionSource))
                     {
@@ -121,6 +124,7 @@ namespace SEReader.Comm
 
         readonly string FRAME_NUMBER = "FrameNumber";
         readonly string TIME_STAMP = "TimeStamp";
+        readonly string GAZE_DIRECTION_QUALITY = "GazeDirectionQ";
         readonly string CLOSEST_WORLD_INTERSECTION = "ClosestWorldIntersection";
         readonly string FILTERED_CLOSEST_WORLD_INTERSECTION = "FilteredClosestWorldIntersection";
         readonly string ESTIMATED_CLOSEST_WORLD_INTERSECTION = "EstimatedClosestWorldIntersection";
@@ -131,12 +135,14 @@ namespace SEReader.Comm
         readonly HashSet<string> _activeIntersections = new ();
         readonly HashSet<string> _foundIntersections = new ();
         readonly ScreenLogger _screenLogger;
+        readonly Options _options;
         
 
         string _intersectionSource;
 
         State _state = State.Initial;
 
+        double _gazeDirectionQuality = 1.0;
         int _intersectionDataIndex = -1;
         Intersection _intersection = new ();
 
@@ -144,6 +150,11 @@ namespace SEReader.Comm
 
         private void CreateIntersection()
         {
+            if (_options.UseGazeQualityMeasurement && _gazeDirectionQuality < _options.GazeQualityThreshold)
+            {
+                return;
+            }
+
             _foundIntersections.Add(_intersection.PlaneName);
             _sample.Intersections.Add(_intersection);
 
@@ -156,6 +167,11 @@ namespace SEReader.Comm
 
         private void FinilizeFrame()
         {
+            if (_options.UseGazeQualityMeasurement && _gazeDirectionQuality < _options.GazeQualityThreshold)
+            {
+                return;
+            }
+
             if (_sample.ID != 0)
             {
                 _activeIntersections.ExceptWith(_foundIntersections);

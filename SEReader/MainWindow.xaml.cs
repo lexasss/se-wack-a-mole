@@ -32,13 +32,14 @@ namespace SEReader
         public bool IsGazeController => (string)cmbController.SelectedItem == ControllerType.Gaze.ToString();
         public bool IsGoNoGo => chkGoNoGo.IsChecked ?? false;
         public bool IsLowPassFilterEnabled => chkLowPassFilter.IsChecked ?? false;
+        public bool UseGazeQuality => chkUseGazeQualityMeasurement.IsChecked ?? false;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         const string OPTIONS_FILENAME = "options.json";
 
         readonly DataSource _dataSource = new ();
-        readonly Parser _parser = new ();
+        readonly Parser _parser;
 
         readonly Game.Game _game;
         readonly GameRenderer _gameRenderer;
@@ -65,6 +66,7 @@ namespace SEReader
             _dataSource.Data += DataSource_Data;
             _dataSource.Closed += DataSource_Closed;
 
+            _parser = new ();
             _parser.PlaneEnter += Parser_PlaneEnter;
             _parser.PlaneExit += Parser_PlaneExit;
             _parser.Sample += Parser_Sample;
@@ -170,6 +172,15 @@ namespace SEReader
             Utils.UIHelper.InitTextBox(txbShotDuration, options.ShotDuration, (value) =>
             {
                 options.ShotDuration = value;
+            });
+            Utils.UIHelper.InitCheckBox(chkUseGazeQualityMeasurement, options.UseGazeQualityMeasurement, (value) =>
+            {
+                options.UseGazeQualityMeasurement = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(UseGazeQuality)));
+            });
+            Utils.UIHelper.InitTextBox(txbGazeQualityThreshold, options.GazeQualityThreshold, (value) =>
+            {
+                options.GazeQualityThreshold = value;
             });
         }
 

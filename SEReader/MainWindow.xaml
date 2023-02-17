@@ -58,6 +58,7 @@
                            Content="Port"/>
                     <TextBox x:Name="txbPort"/>
                 </StackPanel>
+                <Separator/>
                 <StackPanel Orientation="Horizontal">
                     <Label Style="{StaticResource FieldLabel}"
                            Content="Controller"/>
@@ -79,8 +80,19 @@
                     <Label Style="{StaticResource FieldLabel}"
                            HorizontalContentAlignment="Right"
                            Content="is filtered"/>
-                    <CheckBox x:Name="chkSourceFiltered"
-                              VerticalContentAlignment="Center"/>
+                    <CheckBox x:Name="chkSourceFiltered"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Label Style="{StaticResource FieldLabel}"
+                           Content="Use gaze quality"/>
+                    <CheckBox x:Name="chkUseGazeQualityMeasurement"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal"
+                            IsEnabled="{Binding UseGazeQuality}">
+                    <Label Style="{StaticResource FieldLabel}"
+                           HorizontalContentAlignment="Right"
+                           Content="threshold"/>
+                    <TextBox x:Name="txbGazeQualityThreshold"/>
                 </StackPanel>
                 <Separator/>
                 <StackPanel Orientation="Horizontal">
@@ -247,7 +259,7 @@
                     <Label x:Name="lblScore"
                            HorizontalAlignment="Center"
                            FontWeight="ExtraBlack"
-                           FontSize="22"
+                           FontSize="56"
                            Foreground="Blue"
                            Grid.ColumnSpan="100"
                            Content="0"/>
