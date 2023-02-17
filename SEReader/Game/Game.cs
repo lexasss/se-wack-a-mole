@@ -122,8 +122,8 @@ namespace SEReader.Game
 
         // Internal
 
-        readonly List<Cell> _cells = new();
-        readonly Timer _timer = new();
+        readonly List<Cell> _cells = new ();
+        readonly Timer _timer = new ();
         readonly FlowLogger _logger = FlowLogger.Instance;
         readonly Options _options = Options.Instance;
         readonly ScreenLogger _screenLogger;

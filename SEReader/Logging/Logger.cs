@@ -42,7 +42,7 @@ namespace SEReader.Logging
 
         // Internal
 
-        protected readonly List<T> _records = new();
+        protected readonly List<T> _records = new ();
 
         protected abstract string Header { get; }
 

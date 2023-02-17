@@ -16,9 +16,9 @@ namespace SEReader.Tests
             var width = options.ScreenWidth;
             var height = options.ScreenHeight;
 
-            Random random = new();
+            Random random = new ();
 
-            Comm.Intersection intersection = new()
+            Comm.Intersection intersection = new ()
             {
                 ID = 1,
                 PlaneName = screenName,
@@ -41,7 +41,7 @@ namespace SEReader.Tests
 
                 if (random.NextDouble() < 0.02)
                 {
-                    intersection = new()
+                    intersection = new ()
                     {
                         ID = intersection.ID,
                         PlaneName = screenName,

@@ -5,7 +5,7 @@ namespace SEReader.Plane
 {
     internal class PlaneCollection
     {
-        public void Add(params Plane[] plane)
+        public PlaneCollection(params Plane[] plane)
         {
             _planes.AddRange(plane);
         }
@@ -33,6 +33,6 @@ namespace SEReader.Plane
 
         // Internal
 
-        List<Plane> _planes = new();
+        List<Plane> _planes = new ();
     }
 }

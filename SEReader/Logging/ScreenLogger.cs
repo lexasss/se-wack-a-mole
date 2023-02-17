@@ -27,7 +27,7 @@ namespace SEReader.Logging
             Game,           // cell focused/unfocused events
         }
 
-        public static HashSet<Target> Enabled = new()
+        public static HashSet<Target> Enabled = new ()
         {
             Target.Parser,
             Target.Game,

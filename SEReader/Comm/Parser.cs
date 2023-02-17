@@ -128,8 +128,8 @@ namespace SEReader.Comm
         readonly string INTERSECTION = "Intersection";
         readonly string PAD = "\t";
 
-        readonly HashSet<string> _activeIntersections = new();
-        readonly HashSet<string> _foundIntersections = new();
+        readonly HashSet<string> _activeIntersections = new ();
+        readonly HashSet<string> _foundIntersections = new ();
         readonly ScreenLogger _screenLogger;
         
 
@@ -138,9 +138,9 @@ namespace SEReader.Comm
         State _state = State.Initial;
 
         int _intersectionDataIndex = -1;
-        Intersection _intersection = new();
+        Intersection _intersection = new ();
 
-        Sample _sample = new() { Intersections = new List<Intersection>() }; // used as a buffer
+        Sample _sample = new () { Intersections = new List<Intersection>() }; // used as a buffer
 
         private void CreateIntersection()
         {

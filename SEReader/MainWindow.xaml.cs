@@ -37,16 +37,14 @@ namespace SEReader
 
         const string OPTIONS_FILENAME = "options.json";
 
-        readonly DataSource _dataSource = new();
-        readonly Parser _parser = new();
+        readonly DataSource _dataSource = new ();
+        readonly Parser _parser = new ();
 
         readonly Game.Game _game;
         readonly GameRenderer _gameRenderer;
         readonly MouseController _mouseController;
         readonly GazeController _gazeController;
-        readonly Plane.Plane _leftMirror = new Mirror("Left");
-        readonly Plane.Plane _rightMirror = new Mirror("Right");
-        readonly PlaneCollection _planes = new();
+        readonly PlaneCollection _planes;
         readonly PlaneRenderer _planeRenderer;
 
         readonly object _allContent;
@@ -81,13 +79,13 @@ namespace SEReader
                 IsEnabled = false
             };
 
-            _planes.Add(
+            _planes = new (
                 _gazeController,
-                _leftMirror,
-                _rightMirror
+                new Mirror("Left"),
+                new Mirror("Right")
             );
 
-            _planeRenderer = new(
+            _planeRenderer = new (
                 stpLeftMirror,
                 stpRightMirror,
                 stpGame,

@@ -28,7 +28,7 @@ namespace SEReader
             Game,
         }
 
-        public static Options Instance => _instance ??= new();
+        public static Options Instance => _instance ??= new ();
 
         public event EventHandler<Option> Changed;
 

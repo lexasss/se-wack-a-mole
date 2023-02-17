@@ -49,7 +49,7 @@ namespace SEReader.Game
             {
                 for (int x = 0; x < _options.CellX; ++x)
                 {
-                    Image img = new()
+                    Image img = new ()
                     {
                         Source = holeBitmap,
                         Tag = $"{x},{y}",       // used to decode coords when clicked

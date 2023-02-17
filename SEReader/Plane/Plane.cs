@@ -41,7 +41,7 @@ namespace SEReader.Plane
         readonly string _planeName;
         readonly Logging.FlowLogger _logger = Logging.FlowLogger.Instance;
 
-        protected abstract void HandleIntersection(Intersection intersection);
-        protected abstract void HandleEvent(Event evt);
+        protected virtual void HandleIntersection(Intersection intersection) { }
+        protected virtual void HandleEvent(Event evt) { }
     }
 }

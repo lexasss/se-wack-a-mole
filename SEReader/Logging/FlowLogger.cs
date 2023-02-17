@@ -35,7 +35,7 @@ namespace SEReader.Logging
             }
         }
 
-        public static FlowLogger Instance => _instance ??= new();
+        public static FlowLogger Instance => _instance ??= new ();
 
         public bool IsEnabled { get; set; } = true;
 

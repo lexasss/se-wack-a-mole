@@ -97,6 +97,6 @@ namespace SEReader.Plane
             long _startMs = 0;
         }
 
-        Dictionary<object, Plane> _planes = new();
+        Dictionary<object, Plane> _planes = new ();
     }
 }

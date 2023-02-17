@@ -40,7 +40,7 @@ namespace SEReader.Game
 
         // Internal
 
-        readonly Random _random = new();
+        readonly Random _random = new ();
         readonly Options _options = Options.Instance;
     }
 }
