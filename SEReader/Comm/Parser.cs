@@ -57,7 +57,7 @@ namespace SEReader.Comm
                     }
                     else if (line.StartsWith(GAZE_DIRECTION_QUALITY))
                     {
-                        _gazeDirectionQuality = double.Parse(line[GAZE_DIRECTION_QUALITY.Length..]);
+                        _sample.GazeDirectionQuality = double.Parse(line[GAZE_DIRECTION_QUALITY.Length..]);
                     }
                     else if (line.StartsWith(_intersectionSource))
                     {
@@ -142,15 +142,18 @@ namespace SEReader.Comm
 
         State _state = State.Initial;
 
-        double _gazeDirectionQuality = 1.0;
         int _intersectionDataIndex = -1;
         Intersection _intersection = new ();
 
-        Sample _sample = new () { Intersections = new List<Intersection>() }; // used as a buffer
+        Sample _sample = new ()  // used as a buffer
+        {
+            GazeDirectionQuality = 1.0,
+            Intersections = new List<Intersection>()
+        };
 
         private void CreateIntersection()
         {
-            if (_options.UseGazeQualityMeasurement && _gazeDirectionQuality < _options.GazeQualityThreshold)
+            if (_options.UseGazeQualityMeasurement && _sample.GazeDirectionQuality < _options.GazeQualityThreshold)
             {
                 return;
             }
@@ -167,7 +170,7 @@ namespace SEReader.Comm
 
         private void FinilizeFrame()
         {
-            if (_options.UseGazeQualityMeasurement && _gazeDirectionQuality < _options.GazeQualityThreshold)
+            if (_options.UseGazeQualityMeasurement && _sample.GazeDirectionQuality < _options.GazeQualityThreshold)
             {
                 return;
             }

@@ -14,6 +14,7 @@ namespace SEReader.Comm
     {
         public int ID;
         public long TimeStamp;
+        public double GazeDirectionQuality;
         public List<Intersection> Intersections;
     }
 }
