@@ -6,7 +6,7 @@ using System.Windows;
 
 namespace SEReader.Comm
 {
-    [AllowScreenLog(ScreenLogger.Target.DataSource)]
+    [AllowScreenLog]
     public class DataSource
     {
         public event EventHandler<string> Data;

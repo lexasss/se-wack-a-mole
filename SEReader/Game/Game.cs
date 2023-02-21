@@ -5,7 +5,7 @@ using System.Timers;
 
 namespace SEReader.Game
 {
-    [AllowScreenLog(ScreenLogger.Target.Game)]
+    [AllowScreenLog]
     public class Game
     {
         public Game(GameRenderer renderer)

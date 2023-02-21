@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace SEReader.Comm
 {
-    [AllowScreenLog(ScreenLogger.Target.Parser)]
+    [AllowScreenLog]
     public class Parser
     {
         public event EventHandler<Sample> Sample;

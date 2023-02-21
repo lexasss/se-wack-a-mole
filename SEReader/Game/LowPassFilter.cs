@@ -5,7 +5,7 @@ using System;
 
 namespace SEReader.Game
 {
-    [AllowScreenLog(ScreenLogger.Target.LowPassFilter)]
+    [AllowScreenLog]
     internal class LowPassFilter
     {
         public LowPassFilter(double threshold)

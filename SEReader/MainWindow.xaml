@@ -183,10 +183,17 @@
         </StackPanel>
         <TabControl Grid.Column="1">
             <TabItem Header="Log">
-                <TextBox Grid.Row="1" x:Name="txbOutput"
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <WrapPanel x:Name="wrpScreenLogger" Grid.Row="0"/> <!-- filled in code -->
+                    <TextBox Grid.Row="1" x:Name="txbOutput"
                          VerticalScrollBarVisibility="Auto"
                          VerticalAlignment="Stretch"
                          Text="Output: "/>
+                </Grid>
             </TabItem>
             <TabItem Header="Plane">
                 <Grid>

@@ -71,7 +71,7 @@ namespace SEReader
             _parser.PlaneExit += Parser_PlaneExit;
             _parser.Sample += Parser_Sample;
 
-            ScreenLogger.Initialize(txbOutput);
+            ScreenLogger.Initialize(txbOutput, wrpScreenLogger);
 
             _gameRenderer = new GameRenderer(grdGame, lblScore);
             _game = new Game.Game(_gameRenderer);
