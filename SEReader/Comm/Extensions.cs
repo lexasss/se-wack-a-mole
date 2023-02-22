@@ -5,6 +5,9 @@ namespace SEReader.Comm
 {
     public static class Extensions
     {
+        /// <summary>
+        /// Makes available to send Ctrl+C keypress to the process running a command-like tool
+        /// </summary>
         public static void SendCtrlC(this Process p)
         {
             if (AttachConsole((uint)p.Id))

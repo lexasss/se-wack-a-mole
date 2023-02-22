@@ -8,6 +8,10 @@ namespace SEReader.Game
     [AllowScreenLog]
     public class Game
     {
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="renderer">Instance of the game renderer</param>
         public Game(GameRenderer renderer)
         {
             _renderer = renderer;
@@ -30,11 +34,17 @@ namespace SEReader.Game
             Options_Changed(null, Options.Option.Game);
         }
 
+        /// <summary>
+        /// Starts the game
+        /// </summary>
         public void Start()
         {
             _timer.Start();
         }
 
+        /// <summary>
+        /// Stops the game and resets the state
+        /// </summary>
         public void Stop()
         {
             _timer.Stop();
@@ -146,7 +156,8 @@ namespace SEReader.Game
 
             if (_mole.IsVisible)
             {
-                _cells[_mole.CellIndex].CanBeActivated = true;
+                var cellIndex = _mole.IsVisible ? _mole.Y * _options.CellX + _mole.X : -1;
+                _cells[cellIndex].CanBeActivated = true;
                 _renderer.SetMoleType(_mole.Type);
                 _renderer.Show(GameRenderer.Target.Mole, _mole.X, _mole.Y);
             }

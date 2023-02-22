@@ -14,7 +14,6 @@ namespace SEReader.Game
 
         public int X { get; }
         public int Y { get; }
-        public bool IsFocused => _isFocused;
 
         public bool CanBeActivated { get; set; } = false;
 
@@ -23,6 +22,11 @@ namespace SEReader.Game
         /// </summary>
         public event EventHandler<State> ActivationChanged;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="x">Location X</param>
+        /// <param name="y">Location Y</param>
         public Cell(int x, int y)
         {
             X = x;
@@ -31,8 +35,17 @@ namespace SEReader.Game
             TickTimer.Add(this);
         }
 
+        /// <summary>
+        /// Checks whether the cell is located in the given location
+        /// </summary>
+        /// <param name="x">Location X</param>
+        /// <param name="y">Location Y</param>
+        /// <returns>Check result</returns>
         public bool IsAt(int x, int y) => X == x && Y == y;
 
+        /// <summary>
+        /// Marks the cell bearing the focus
+        /// </summary>
         public void SetFocus()
         {
             _logger.Add(LogSource.Game, "cell", "focused", $"{Y},{X}");
@@ -40,6 +53,9 @@ namespace SEReader.Game
             _isFocused = true;
         }
 
+        /// <summary>
+        /// Removes the focus mark, and also activation mark if any
+        /// </summary>
         public void RemoveFocus()
         {
             _isFocused = false;
@@ -54,6 +70,9 @@ namespace SEReader.Game
             }
         }
 
+        /// <summary>
+        /// Sets the activation mark
+        /// </summary>
         public void Shoot()
         {
             _attentionCounter = _options.DwellTime + _options.ShotDuration;
@@ -63,6 +82,9 @@ namespace SEReader.Game
             ActivationChanged.Invoke(this, State.Active);
         }
 
+        /// <summary>
+        /// Resets the state without firing <see cref="ActivationChanged" event/>
+        /// </summary>
         public void Reset()
         {
             _isFocused = false;

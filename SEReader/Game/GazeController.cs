@@ -5,8 +5,16 @@ using System.Threading.Tasks;
 
 namespace SEReader.Game
 {
+    /// <summary>
+    /// Uses <see cref="Sample"/> and/or <see cref="Intersection"/> to play the game 
+    /// </summary>
     public class GazeController : Plane.Plane
     {
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="game">Game instance</param>
+        /// <param name="screenName">SmartEye screen name where the game is shown</param>
         public GazeController(Game game, string screenName) : base(screenName)
         {
             _screenWidth = _options.ScreenWidth;

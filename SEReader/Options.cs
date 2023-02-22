@@ -17,6 +17,9 @@ namespace SEReader
         AI,
     }
 
+    /// <summary>
+    /// Stores all options
+    /// </summary>
     internal class Options
     {
         public enum Option
@@ -41,7 +44,7 @@ namespace SEReader
         public int ScreenHeight { get; } = (int)SystemParameters.PrimaryScreenHeight;
         public int PointsPerMole { get; } = 5;
 
-        // Adjustable / potentionally adjustable
+        // Adjustable
 
         // Game
 
@@ -143,6 +146,11 @@ namespace SEReader
 
         // Load/Save
 
+        /// <summary>
+        /// Loads the options from the JSON file. Must be called at the very beginning of the application
+        /// </summary>
+        /// <param name="filename">The file that stores the options</param>
+        /// <returns>Options object instance</returns>
         public static Options Load(string filename)
         {
             if (File.Exists(filename))
@@ -155,6 +163,11 @@ namespace SEReader
             return Instance;
         }
 
+        /// <summary>
+        /// Saves the options to a JSON file 
+        /// </summary>
+        /// <param name="filename">The file to store the options</param>
+        /// <exception cref="Exception">Throws is <see cref="Options"/> instance is not created yet</exception>
         public static void Save(string filename)
         {
             if (_instance == null)

@@ -3,13 +3,25 @@ using System.Collections.Generic;
 
 namespace SEReader.Plane
 {
+    /// <summary>
+    /// Maintaince a collection of planes/screens
+    /// </summary>
     internal class PlaneCollection
     {
-        public PlaneCollection(params Plane[] plane)
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="planes">a list of planes/screens</param>
+        public PlaneCollection(params Plane[] planes)
         {
-            _planes.AddRange(plane);
+            _planes.AddRange(planes);
         }
 
+        /// <summary>
+        /// Passes the gaze-on and gaze-off events to the correct plane/screen
+        /// </summary>
+        /// <param name="evt">Event name</param>
+        /// <param name="name">Plane/screen that received it</param>
         public void Notify(Plane.Event evt, string name)
         {
             foreach (var plane in _planes)
@@ -22,6 +34,10 @@ namespace SEReader.Plane
             }
         }
 
+        /// <summary>
+        /// Consumes a gaze sample
+        /// </summary>
+        /// <param name="sample">gae sample</param>
         public void Feed(ref Sample sample)
         {
             foreach (var ints in sample.Intersections)

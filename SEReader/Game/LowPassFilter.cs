@@ -8,6 +8,12 @@ namespace SEReader.Game
     [AllowScreenLog]
     internal class LowPassFilter
     {
+        /// <summary>
+        /// Creates a low-pass filter
+        /// </summary>
+        /// <param name="threshold">Threshold that defines the distance between 
+        /// the current gaze point and a received sample that separates between strong and weak
+        /// influence of this sample</param>
         public LowPassFilter(double threshold)
         {
             _threshold = threshold;
@@ -15,6 +21,11 @@ namespace SEReader.Game
             _screenLogger = ScreenLogger.Create();
         }
 
+        /// <summary>
+        /// Estimated the next gaze point based on the previous gaze point and the received sample
+        /// </summary>
+        /// <param name="newPoint">gaze point form the new sample</param>
+        /// <returns>filtered gaze point</returns>
         public Point2D Feed(Point2D newPoint)
         {
             if (!pointExists || !_options.LowPassFilterEnabled)
@@ -65,6 +76,10 @@ namespace SEReader.Game
             return _filteredPoint;
         }
 
+        /// <summary>
+        /// Informs the filter about gaze-entered and gaze-left events regarding the interaction space
+        /// </summary>
+        /// <param name="evt">gaze event to the reacted to</param>
         public void Inform(Plane.Plane.Event evt)
         {
             if (evt == Plane.Plane.Event.Exit)

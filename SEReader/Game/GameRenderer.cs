@@ -1,5 +1,4 @@
-﻿using SEReader.Logging;
-using System;
+﻿using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
@@ -7,6 +6,9 @@ using System.Windows.Threading;
 
 namespace SEReader.Game
 {
+    /// <summary>
+    /// Controls the game assets shown on the screen. The renderer instance will be used by a <see cref="Game"/ instance>
+    /// </summary>
     public class GameRenderer
     {
         public enum Target
@@ -27,6 +29,11 @@ namespace SEReader.Game
             }
         }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="grid">Game grid. The grid will be filled with "cells"</param>
+        /// <param name="score">Label to display the score</param>
         public GameRenderer(Grid grid, Label score)
         {
             _score = score;
@@ -97,6 +104,11 @@ namespace SEReader.Game
             _mole = _mole1;
         }
 
+        /// <summary>
+        /// Sets the mole type to appear next
+        /// </summary>
+        /// <param name="mole">Mole type</param>
+        /// <exception cref="Exception">Throws if the mole type is unknown</exception>
         public void SetMoleType(MoleType mole)
         {
             _mole = mole switch
@@ -107,6 +119,13 @@ namespace SEReader.Game
             }; ;
         }
 
+        /// <summary>
+        /// Shows an asset in the specified grid location
+        /// </summary>
+        /// <param name="target">Accet to show</param>
+        /// <param name="x">Location X</param>
+        /// <param name="y">Location Y</param>
+        /// <exception cref="Exception">Throws if the asset is unknown</exception>
         public void Show(Target target, int x, int y)
         {
             var img = target switch
@@ -123,6 +142,11 @@ namespace SEReader.Game
             });
         }
 
+        /// <summary>
+        /// Hide the asset
+        /// </summary>
+        /// <param name="target">Asset to hide</param>
+        /// <exception cref="Exception">Throws if the asset is unknown</exception>
         public void Hide(Target target)
         {
             var img = target switch
@@ -139,6 +163,10 @@ namespace SEReader.Game
             });
         }
 
+        /// <summary>
+        /// Displayes the score
+        /// </summary>
+        /// <param name="score">Score to display</param>
         public void SetScore(int score)
         {
             _dispatcher.Invoke(() =>

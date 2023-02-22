@@ -8,15 +8,26 @@ namespace SEReader.Utils
         void Tick(int interval);
     }
 
+    /// <summary>
+    /// The timer that updates UI widgets on a regular basis
+    /// </summary>
     internal static class TickTimer
     {
         public static readonly int TICK_INTERVAL = 30;
 
+        /// <summary>
+        /// Adds a widget to be regularly updated
+        /// </summary>
+        /// <param name="updatable">a widget</param>
         public static void Add(ITickUpdatable updatable)
         {
             _updatables.Add(updatable);
         }
 
+        /// <summary>
+        /// Removes a widget from the list of those that should be regularly updated
+        /// </summary>
+        /// <param name="updatable">a widget</param>
         public static void Remove(ITickUpdatable updatable)
         {
             _updatables.Remove(updatable);

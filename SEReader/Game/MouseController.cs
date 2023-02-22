@@ -4,6 +4,9 @@ using System.Windows.Controls;
 
 namespace SEReader.Game
 {
+    /// <summary>
+    /// Game controller using mouse/touch
+    /// </summary>
     public class MouseController
     {
         public bool IsEnabled { get; set; } = true;
@@ -12,7 +15,7 @@ namespace SEReader.Game
         /// Constructor
         /// </summary>
         /// <param name="game">Game instance</param>
-        /// <param name="panel">Panel with images representing cells</param>
+        /// <param name="panel">Panel with cells represented as instances of <see cref="Image"/></param>
         public MouseController(Game game, Panel panel)
         {
             _game = game;

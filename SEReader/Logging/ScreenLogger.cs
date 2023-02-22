@@ -16,22 +16,34 @@ namespace SEReader.Logging
         public AllowScreenLogAttribute() { }
     }
 
+    /// <summary>
+    /// Logs data to a widget visible on-screen
+    /// </summary>
     public class ScreenLogger
     {
         public enum Target
         {
+            /// <summary>
+            /// FOR INTERNAL USE ONLY!
+            /// </summary>
             Unknown,
-            DataSource,     // outputs only in testing mode; silent in ordinal conditions
-            Parser,         // plane enter/exit events
-            LowPassFilter,  // outputs each point + Reset event
-            Game,           // cell focused/unfocused events
+            /// <summary>
+            /// outputs only in testing mode; silent in ordinal conditions
+            /// </summary>
+            DataSource,
+            /// <summary>
+            /// plane enter/exit events
+            /// </summary>
+            Parser,
+            /// <summary>
+            /// outputs each point + Reset event
+            /// </summary>
+            LowPassFilter,
+            /// <summary>
+            /// cell focused/unfocused events
+            /// </summary>
+            Game,
         }
-
-        public static HashSet<Target> Enabled = new ()
-        {
-            Target.Parser,
-            Target.Game,
-        };
 
         /// <summary>
         /// Initializatoin procedure, to be calleed once only before calling <see cref="Create(Target?)"/>
@@ -103,10 +115,15 @@ namespace SEReader.Logging
 
         // Internal
 
-        private ScreenLogger(Target target)
+        static ScreenPrinter _printer = null;
+
+        readonly Target _target;
+
+        static HashSet<Target> Enabled = new()
         {
-            _target = target;
-        }
+            Target.Parser,
+            Target.Game,
+        };
 
         private class ScreenPrinter
         {
@@ -133,9 +150,10 @@ namespace SEReader.Logging
             }
         }
 
-        static ScreenPrinter _printer = null;
-
-        readonly Target _target;
+        private ScreenLogger(Target target)
+        {
+            _target = target;
+        }
 
         private static void CreateControls(Panel parent)
         {

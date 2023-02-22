@@ -59,7 +59,6 @@ namespace SEReader
             DataContext = this;
 
             var options = Options.Load(OPTIONS_FILENAME);
-            options.Changed += Options_Changed;
 
             _allContent = Content;
 
@@ -103,6 +102,7 @@ namespace SEReader
 
             BindUIControls();
 
+            options.Changed += Options_Changed;
             Options_Changed(options, Options.Option.Controller);
         }
 

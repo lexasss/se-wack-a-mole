@@ -14,6 +14,12 @@ namespace SEReader.Comm
 
         public bool IsRunning => _cmd != null;
 
+        /// <summary>
+        /// Start the service (runs a command-line tool)
+        /// </summary>
+        /// <param name="host">Host address of the PC running SmartEye</param>
+        /// <param name="port">SmartEye service port</param>
+        /// <param name="isTesting">If set to true, then it runs "ping" service instead of "SocketClient"</param>
         public void Start(string host, string port, bool isTesting = false)
         {
             if (IsRunning) return;
@@ -41,6 +47,9 @@ namespace SEReader.Comm
             _cmd.BeginOutputReadLine();
         }
 
+        /// <summary>
+        /// Asynchronously stop the service
+        /// </summary>
         public async Task Stop()
         {
             if (!IsRunning) return;

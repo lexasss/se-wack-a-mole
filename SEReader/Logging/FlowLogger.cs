@@ -1,8 +1,8 @@
-﻿using System;
-using System.Linq;
-
-namespace SEReader.Logging
+﻿namespace SEReader.Logging
 {
+    /// <summary>
+    /// Implements a logger use to log syncronized data from various routines 
+    /// </summary>
     public class FlowLogger : Logger<FlowLogger.Record>
     {
         public class Record

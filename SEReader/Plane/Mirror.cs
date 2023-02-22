@@ -1,7 +1,8 @@
-﻿using SEReader.Comm;
-
-namespace SEReader.Plane
+﻿namespace SEReader.Plane
 {
+    /// <summary>
+    /// Represent a SmartEye plane as a mirror
+    /// </summary>
     internal class Mirror : Plane
     {
         public Mirror(string side) : base(side + "Mirror") { }

@@ -2,6 +2,9 @@
 
 namespace SEReader.Plane
 {
+    /// <summary>
+    /// Base for objects representing SmartEye plane/screen
+    /// </summary>
     public abstract class Plane
     {
         public enum Event
@@ -15,11 +18,19 @@ namespace SEReader.Plane
         public string PlaneName => _planeName;
 
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="planeName">SmartEye plane or screen name</param>
         public Plane(string planeName)
         {
             _planeName = planeName;
         }
 
+        /// <summary>
+        /// Notifies about gaze-on and gaze-off events
+        /// </summary>
+        /// <param name="evt">Gaze event</param>
         public void Notify(Event evt)
         {
             if (!IsEnabled) return;
@@ -29,6 +40,10 @@ namespace SEReader.Plane
             HandleEvent(evt);
         }
 
+        /// <summary>
+        /// Consumes the gaze point that fell on the plane
+        /// </summary>
+        /// <param name="intersection"></param>
         public void Feed(Intersection intersection)
         {
             if (!IsEnabled) return;

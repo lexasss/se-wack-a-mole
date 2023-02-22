@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 namespace SEReader.Comm
 {
+    /// <summary>
+    /// Parses data received from data source, and outputs SmartEye samples, also some high-level events
+    /// </summary>
     [AllowScreenLog]
     public class Parser
     {
@@ -18,6 +21,10 @@ namespace SEReader.Comm
             _intersectionSource = CLOSEST_WORLD_INTERSECTION;
         }
 
+        /// <summary>
+        /// Resets the parser state. Must be called before feeding the first line from a data source
+        /// </summary>
+        /// <exception cref="Exception">Throws if the intersection source is not known</exception>
         public void Reset()
         {
             _state = State.Initial;
@@ -36,6 +43,11 @@ namespace SEReader.Comm
             };
         }
 
+        /// <summary>
+        /// Parses a text line received from data source
+        /// </summary>
+        /// <param name="line">Text line</param>
+        /// <exception cref="Exception">Throws if unexpected data is received (according to what is expected regarding the current state)</exception>
         public void Feed(string line)
         {
             if (line == null || line.Length == 0)
@@ -143,9 +155,9 @@ namespace SEReader.Comm
         State _state = State.Initial;
 
         int _intersectionDataIndex = -1;
-        Intersection _intersection = new ();
+        Intersection _intersection = new ();    // used as a buffer; the code assumes that a copy will be create if passed somewhere else, so it must be a structure and not a class
 
-        Sample _sample = new ()  // used as a buffer
+        Sample _sample = new ()  // used as a buffer; the code assumes that a copy will be create if passed somewhere else, so it must be a structure and not a class
         {
             GazeDirectionQuality = 1.0,
             Intersections = new List<Intersection>()

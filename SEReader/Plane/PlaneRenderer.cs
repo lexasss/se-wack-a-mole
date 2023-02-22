@@ -5,8 +5,15 @@ using System.Windows.Media;
 
 namespace SEReader.Plane
 {
+    /// <summary>
+    /// Visually represents SmartEye planes/screens
+    /// </summary>
     internal class PlaneRenderer
     {
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="panels">UI panels that represent planes/screen</param>
         public PlaneRenderer(params Panel[] panels)
         {
             foreach (var panel in panels)
@@ -22,6 +29,10 @@ namespace SEReader.Plane
             }
         }
 
+        /// <summary>
+        /// Must be called for each gaze-on event
+        /// </summary>
+        /// <param name="name">plane/screen name</param>
         public void Enter(string name)
         {
             if (!_planes.ContainsKey(name))
@@ -32,6 +43,10 @@ namespace SEReader.Plane
             _planes[name].Enter();
         }
 
+        /// <summary>
+        /// Must be called for each gaze-off event
+        /// </summary>
+        /// <param name="name">plane/screen name</param>
         public void Exit(string name)
         {
             if (!_planes.ContainsKey(name))
@@ -42,6 +57,9 @@ namespace SEReader.Plane
             _planes[name].Exit();
         }
 
+        /// <summary>
+        /// Resets the state of all planes/screens
+        /// </summary>
         public void Reset()
         {
             foreach (var plane in _planes.Values)

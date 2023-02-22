@@ -18,8 +18,19 @@ namespace SEReader.Logging
         Discard,
     }
 
+    /// <summary>
+    /// Base class for logging classes
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public abstract class Logger<T> where T : class
     {
+        /// <summary>
+        /// Saves the log with a specified file name.
+        /// Shows the dilaog box to select the file location and name
+        /// </summary>
+        /// <param name="defaultFileName">Default file name</param>
+        /// <param name="greeting">Optional header placed in the beginning of the log file</param>
+        /// <returns>saving result</returns>
         public SavingResult SaveTo(string defaultFileName, string greeting = "")
         {
             var filename = defaultFileName;
@@ -34,6 +45,9 @@ namespace SEReader.Logging
             return result;
         }
 
+        /// <summary>
+        /// Clears th elog buffer
+        /// </summary>
         public void Clear()
         {
             _records.Clear();

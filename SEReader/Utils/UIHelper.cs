@@ -3,10 +3,20 @@ using System.Windows.Controls;
 
 namespace SEReader.Utils
 {
+    /// <summary>
+    /// Initilizes and sets changing action of some types of UI widgets
+    /// </summary>
     internal static class UIHelper
     {
         public delegate void ItemChanged<T>(T value);
 
+        /// <summary>
+        /// Initializes a <see cref="ComboBox"/>. If the selected item is enum, it initializes the items with values from this enum
+        /// </summary>
+        /// <typeparam name="T">enum or other type that is assigned to the <see cref="ComboBox"/> items</typeparam>
+        /// <param name="cmb">The <see cref="ComboBox"/> instance</param>
+        /// <param name="selected">The selected item</param>
+        /// <param name="changedAction">Callback for SelectionChanged event</param>
         public static void InitComboBox<T>(ComboBox cmb, T selected, ItemChanged<T> changedAction)
         {
             if (typeof(T).IsEnum)
@@ -23,6 +33,12 @@ namespace SEReader.Utils
                 (T)cmb.SelectedItem);
         }
 
+        /// <summary>
+        /// Initializes a <see cref="CheckBox"/>
+        /// </summary>
+        /// <param name="chk">The <see cref="CheckBox"/> instance</param>
+        /// <param name="isChecked">IsChecked value</param>
+        /// <param name="changedAction">Callback for Checked and Unchecked events</param>
         public static void InitCheckBox(CheckBox chk, bool isChecked, ItemChanged<bool> changedAction)
         {
             chk.IsChecked = isChecked;
@@ -30,6 +46,13 @@ namespace SEReader.Utils
             chk.Unchecked += (s, e) => changedAction(chk.IsChecked ?? false);
         }
 
+        /// <summary>
+        /// Initializes a <see cref="TextBox"/>
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="txb">The <see cref="TextBox"/> instance</param>
+        /// <param name="value">Initial text value. Supports <see cref="string"/>, <see cref="int"/> and <see cref="double"/> types</param>
+        /// <param name="changedAction">Callback for TextChanged event</param>
         public static void InitTextBox<T>(TextBox txb, T value, ItemChanged<T> changedAction)
         {
             txb.Text = value.ToString();
