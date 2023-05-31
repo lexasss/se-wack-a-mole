@@ -183,7 +183,7 @@ namespace WackAMole.Game
         readonly Image _shot;
         readonly Image _focus;
         readonly Dispatcher _dispatcher;
-        readonly Options _options = Options.Instance;
+        readonly GameOptions _options = GameOptions.Instance;
 
         Image _mole;
 

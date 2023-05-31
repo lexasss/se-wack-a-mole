@@ -1,5 +1,4 @@
-﻿using WackAMole.Comm;
-using System.IO;
+﻿using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -16,7 +15,7 @@ namespace WackAMole.Tests
                 return;
             }
 
-            string screenName = Options.Instance.ScreenName;
+            string screenName = GameOptions.Instance.ScreenName;
 
             using (var stream = new StreamReader(filename))
             {
@@ -28,17 +27,17 @@ namespace WackAMole.Tests
 
                     var p = line.Split('\t');
 
-                    var intersection = new Intersection()
+                    var intersection = new SEClient.Intersection()
                     {
                         ID = 1,
                         PlaneName = screenName,
-                        Gaze = new Point3D()
+                        Gaze = new SEClient.Point3D()
                         {
                             X = 0,
                             Y = 0,
                             Z = 0,
                         },
-                        Point = new Point2D()
+                        Point = new SEClient.Point2D()
                         {
                             X = int.Parse(p[0]),
                             Y = int.Parse(p[1])

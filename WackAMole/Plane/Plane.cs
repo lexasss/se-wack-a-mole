@@ -1,6 +1,4 @@
-﻿using WackAMole.Comm;
-
-namespace WackAMole.Plane
+﻿namespace WackAMole.Plane
 {
     /// <summary>
     /// Base for objects representing SmartEye plane/screen
@@ -44,7 +42,7 @@ namespace WackAMole.Plane
         /// Consumes the gaze point that fell on the plane
         /// </summary>
         /// <param name="intersection"></param>
-        public void Feed(Intersection intersection)
+        public void Feed(SEClient.Intersection intersection)
         {
             if (!IsEnabled) return;
 
@@ -56,7 +54,7 @@ namespace WackAMole.Plane
         readonly string _planeName;
         readonly Logging.FlowLogger _logger = Logging.FlowLogger.Instance;
 
-        protected virtual void HandleIntersection(Intersection intersection) { }
+        protected virtual void HandleIntersection(SEClient.Intersection intersection) { }
         protected virtual void HandleEvent(Event evt) { }
     }
 }

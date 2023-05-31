@@ -57,6 +57,6 @@ namespace WackAMole.Game
         // Internal
 
         readonly Random _random = new ();
-        readonly Options _options = Options.Instance;
+        readonly GameOptions _options = GameOptions.Instance;
     }
 }

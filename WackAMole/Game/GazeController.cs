@@ -1,5 +1,4 @@
-﻿using WackAMole.Comm;
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -24,7 +23,7 @@ namespace WackAMole.Game
             _lowPassFilter = new LowPassFilter(_options.ScreenWidth / _options.CellX * 0.7);
 
             _options.Changed += Options_Changed;
-            Options_Changed(null, Options.Option.Controller);
+            Options_Changed(null, GameOptions.Option.Controller);
         }
 
         // Internal
@@ -32,7 +31,7 @@ namespace WackAMole.Game
         readonly double _screenWidth;
         readonly double _screenHeight;
         readonly Game _game;
-        readonly Options _options = Options.Instance;
+        readonly GameOptions _options = GameOptions.Instance;
         readonly LowPassFilter _lowPassFilter;
 
         CancellationTokenSource _cancelWaiting = null;
@@ -42,9 +41,9 @@ namespace WackAMole.Game
         int _lastCellX = -1;
         int _lastCellY = -1;
 
-        protected override void HandleIntersection(Intersection intersection)
+        protected override void HandleIntersection(SEClient.Intersection intersection)
         {
-            Point2D point = _lowPassFilter.Feed(intersection.Point);
+            SEClient.Point2D point = _lowPassFilter.Feed(intersection.Point);
 
             double gridX = (point.X / _screenWidth * _options.CellX);
             double gridY = (point.Y / _screenHeight * _options.CellY);
@@ -87,9 +86,9 @@ namespace WackAMole.Game
             _lowPassFilter.Inform(evt);
         }
 
-        private void Options_Changed(object _, Options.Option e)
+        private void Options_Changed(object _, GameOptions.Option e)
         {
-            if (e == Options.Option.Controller)
+            if (e == GameOptions.Option.Controller)
             {
                 _currentCellSizeFromItsCenter = _options.FocusedCellExpansion + 0.5;
             }

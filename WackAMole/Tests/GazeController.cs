@@ -9,7 +9,7 @@ namespace WackAMole.Tests
         {
             int count = 1000;
             bool isOnPlane = false;
-            var options = Options.Instance;
+            var options = GameOptions.Instance;
 
             string screenName = options.ScreenName;
             var width = options.ScreenWidth;
@@ -17,17 +17,17 @@ namespace WackAMole.Tests
 
             Random random = new ();
 
-            Comm.Intersection intersection = new ()
+            SEClient.Intersection intersection = new ()
             {
                 ID = 1,
                 PlaneName = screenName,
-                Gaze = new Comm.Point3D()
+                Gaze = new SEClient.Point3D()
                 {
                     X = random.NextDouble(),
                     Y = random.NextDouble(),
                     Z = 0,
                 },
-                Point = new Comm.Point2D()
+                Point = new SEClient.Point2D()
                 {
                     X = random.NextDouble() * width,
                     Y = random.NextDouble() * height,
@@ -44,13 +44,13 @@ namespace WackAMole.Tests
                     {
                         ID = intersection.ID,
                         PlaneName = screenName,
-                        Gaze = new Comm.Point3D()
+                        Gaze = new SEClient.Point3D()
                         {
                             X = random.NextDouble(),
                             Y = random.NextDouble(),
                             Z = 0,
                         },
-                        Point = new Comm.Point2D()
+                        Point = new SEClient.Point2D()
                         {
                             X = random.NextDouble() * width,
                             Y = random.NextDouble() * height,

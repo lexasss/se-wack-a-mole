@@ -1,5 +1,4 @@
-﻿using WackAMole.Comm;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace WackAMole.Plane
 {
@@ -38,7 +37,7 @@ namespace WackAMole.Plane
         /// Consumes a gaze sample
         /// </summary>
         /// <param name="sample">gae sample</param>
-        public void Feed(ref Sample sample)
+        public void Feed(ref SEClient.Sample sample)
         {
             foreach (var ints in sample.Intersections)
             {

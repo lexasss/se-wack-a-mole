@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
-using WackAMole.Comm;
 using WackAMole.Plane;
 using WackAMole.Game;
 using WackAMole.Logging;
@@ -36,10 +35,11 @@ namespace WackAMole
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        const string OPTIONS_FILENAME = "options.json";
+        const string GAME_OPTIONS_FILENAME = "wack_a_mole_options.json";
+        const string SE_CLIENT_OPTIONS_FILENAME = "se_client_options.json";
 
-        readonly DataSource _dataSource = new ();
-        readonly Parser _parser;
+        readonly SEClient.DataSource _dataSource = new ();
+        readonly SEClient.Parser _parser;
 
         readonly Game.Game _game;
         readonly GameRenderer _gameRenderer;
@@ -58,7 +58,8 @@ namespace WackAMole
 
             DataContext = this;
 
-            var options = Options.Load(OPTIONS_FILENAME);
+            var options = GameOptions.Load(GAME_OPTIONS_FILENAME);
+            SEClient.Options.Load(SE_CLIENT_OPTIONS_FILENAME);
 
             _allContent = Content;
 
@@ -103,84 +104,85 @@ namespace WackAMole
             BindUIControls();
 
             options.Changed += Options_Changed;
-            Options_Changed(options, Options.Option.Controller);
+            Options_Changed(options, GameOptions.Option.Controller);
         }
 
         private void BindUIControls()
         {
-            var options = Options.Instance;
+            var gameOptions = GameOptions.Instance;
+            var seClientOptions = SEClient.Options.Instance;
 
-            Utils.UIHelper.InitComboBox(cmbController, options.Controller, (value) =>
+            Utils.UIHelper.InitComboBox(cmbController, gameOptions.Controller, (value) =>
             {
-                options.Controller = value;
+                gameOptions.Controller = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsGazeController)));
             });
-            Utils.UIHelper.InitComboBox(cmbSource, options.IntersectionSource, (value) =>
+            Utils.UIHelper.InitComboBox(cmbSource, seClientOptions.IntersectionSource, (value) =>
             {
-                options.IntersectionSource = value;
+                seClientOptions.IntersectionSource = value;
             });
-            Utils.UIHelper.InitCheckBox(chkSourceFiltered, options.IntersectionSourceFiltered, (value) =>
+            Utils.UIHelper.InitCheckBox(chkSourceFiltered, seClientOptions.IntersectionSourceFiltered, (value) =>
             {
-                options.IntersectionSourceFiltered = value;
+                seClientOptions.IntersectionSourceFiltered = value;
             });
-            Utils.UIHelper.InitCheckBox(chkGoNoGo, options.GoNoGo, (value) =>
+            Utils.UIHelper.InitCheckBox(chkGoNoGo, gameOptions.GoNoGo, (value) =>
             {
-                options.GoNoGo = value;
+                gameOptions.GoNoGo = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsGoNoGo)));
             });
-            Utils.UIHelper.InitTextBox(txbDwellTime, options.DwellTime, (value) =>
+            Utils.UIHelper.InitTextBox(txbDwellTime, gameOptions.DwellTime, (value) =>
             {
-                options.DwellTime = value;
+                gameOptions.DwellTime = value;
             });
-            Utils.UIHelper.InitCheckBox(chkLowPassFilter, options.LowPassFilterEnabled, (value) =>
+            Utils.UIHelper.InitCheckBox(chkLowPassFilter, gameOptions.LowPassFilterEnabled, (value) =>
             {
-                options.LowPassFilterEnabled = value;
+                gameOptions.LowPassFilterEnabled = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsLowPassFilterEnabled)));
             });
-            Utils.UIHelper.InitTextBox(txbLowPassFilterGain, options.LowPassFilterGain, (value) =>
+            Utils.UIHelper.InitTextBox(txbLowPassFilterGain, gameOptions.LowPassFilterGain, (value) =>
             {
-                options.LowPassFilterGain = value;
+                gameOptions.LowPassFilterGain = value;
             });
-            Utils.UIHelper.InitTextBox(txbLowPassFilterResetDelay, options.LowPassFilterResetDelay, (value) =>
+            Utils.UIHelper.InitTextBox(txbLowPassFilterResetDelay, gameOptions.LowPassFilterResetDelay, (value) =>
             {
-                options.LowPassFilterResetDelay = value;
+                gameOptions.LowPassFilterResetDelay = value;
             });
-            Utils.UIHelper.InitTextBox(txbFocusedCellExpansion, options.FocusedCellExpansion, (value) =>
+            Utils.UIHelper.InitTextBox(txbFocusedCellExpansion, gameOptions.FocusedCellExpansion, (value) =>
             {
-                options.FocusedCellExpansion = value;
+                gameOptions.FocusedCellExpansion = value;
             });
-            Utils.UIHelper.InitTextBox(txbMoleTimerInterval, options.MoleTimerInterval, (value) =>
+            Utils.UIHelper.InitTextBox(txbMoleTimerInterval, gameOptions.MoleTimerInterval, (value) =>
             {
-                options.MoleTimerInterval = value;
+                gameOptions.MoleTimerInterval = value;
             });
-            Utils.UIHelper.InitTextBox(txbMoleEventRate, options.MoleEventRate, (value) =>
+            Utils.UIHelper.InitTextBox(txbMoleEventRate, gameOptions.MoleEventRate, (value) =>
             {
-                options.MoleEventRate = value;
+                gameOptions.MoleEventRate = value;
             });
-            Utils.UIHelper.InitTextBox(txbLPFWeightDamping, options.LowPassFilterWeightDamping, (value) =>
+            Utils.UIHelper.InitTextBox(txbLPFWeightDamping, gameOptions.LowPassFilterWeightDamping, (value) =>
             {
-                options.LowPassFilterWeightDamping = value;
+                gameOptions.LowPassFilterWeightDamping = value;
             });
-            Utils.UIHelper.InitTextBox(txbFocusLatency, options.FocusLatency, (value) =>
+            Utils.UIHelper.InitTextBox(txbFocusLatency, gameOptions.FocusLatency, (value) =>
             {
-                options.FocusLatency = value;
+                gameOptions.FocusLatency = value;
             });
-            Utils.UIHelper.InitTextBox(txbNoGoProbability, options.NoGoProbability, (value) =>
+            Utils.UIHelper.InitTextBox(txbNoGoProbability, gameOptions.NoGoProbability, (value) =>
             {
-                options.NoGoProbability = value;
+                gameOptions.NoGoProbability = value;
             });
-            Utils.UIHelper.InitTextBox(txbShotDuration, options.ShotDuration, (value) =>
+            Utils.UIHelper.InitTextBox(txbShotDuration, gameOptions.ShotDuration, (value) =>
             {
-                options.ShotDuration = value;
+                gameOptions.ShotDuration = value;
             });
-            Utils.UIHelper.InitCheckBox(chkUseGazeQualityMeasurement, options.UseGazeQualityMeasurement, (value) =>
+            Utils.UIHelper.InitCheckBox(chkUseGazeQualityMeasurement, seClientOptions.UseGazeQualityMeasurement, (value) =>
             {
-                options.UseGazeQualityMeasurement = value;
+                seClientOptions.UseGazeQualityMeasurement = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(UseGazeQuality)));
             });
-            Utils.UIHelper.InitTextBox(txbGazeQualityThreshold, options.GazeQualityThreshold, (value) =>
+            Utils.UIHelper.InitTextBox(txbGazeQualityThreshold, seClientOptions.GazeQualityThreshold, (value) =>
             {
-                options.GazeQualityThreshold = value;
+                seClientOptions.GazeQualityThreshold = value;
             });
         }
 
@@ -196,11 +198,11 @@ namespace WackAMole
 
         // Handlers
 
-        private void Options_Changed(object sender, Options.Option e)
+        private void Options_Changed(object sender, GameOptions.Option e)
         {
-            if (e == Options.Option.Controller)
+            if (e == GameOptions.Option.Controller)
             {
-                var options = (Options)sender;
+                var options = (GameOptions)sender;
                 _gazeController.IsEnabled = options.Controller == ControllerType.Gaze;
                 _mouseController.IsEnabled = options.Controller == ControllerType.Mouse;
                 _game.ClearFocus();
@@ -221,7 +223,7 @@ namespace WackAMole
             _parser.Feed(e);
         }
 
-        private void Parser_PlaneEnter(object _, Intersection e)
+        private void Parser_PlaneEnter(object _, SEClient.Intersection e)
         {
             Dispatcher.Invoke(() =>
             {
@@ -241,7 +243,7 @@ namespace WackAMole
             });
         }
 
-        private void Parser_Sample(object _, Sample e)
+        private void Parser_Sample(object _, SEClient.Sample e)
         {
             Dispatcher.Invoke(() =>
             {
@@ -261,7 +263,8 @@ namespace WackAMole
             settings.Port = txbPort.Text;
             settings.Save();
 
-            Options.Save(OPTIONS_FILENAME);
+            GameOptions.Save(GAME_OPTIONS_FILENAME);
+            SEClient.Options.Save(SE_CLIENT_OPTIONS_FILENAME);
         }
 
         private async Task RunTest(Func<Task> action)

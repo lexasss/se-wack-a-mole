@@ -7,7 +7,7 @@ namespace WackAMole.Tests
 {
     internal class Parser
     {
-        public static async Task Run(Comm.Parser parser, bool isFast)
+        public static async Task Run(SEClient.Parser parser, bool isFast)
         {
             string filename = "test-data-socketclient2.txt";
             if (!File.Exists(filename))

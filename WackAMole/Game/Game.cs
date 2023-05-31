@@ -31,7 +31,7 @@ namespace WackAMole.Game
             _screenLogger = ScreenLogger.Create();
 
             _options.Changed += Options_Changed;
-            Options_Changed(null, Options.Option.Game);
+            Options_Changed(null, GameOptions.Option.Game);
         }
 
         /// <summary>
@@ -135,7 +135,7 @@ namespace WackAMole.Game
         readonly List<Cell> _cells = new ();
         readonly Timer _timer = new ();
         readonly FlowLogger _logger = FlowLogger.Instance;
-        readonly Options _options = Options.Instance;
+        readonly GameOptions _options = GameOptions.Instance;
         readonly ScreenLogger _screenLogger;
         readonly GameRenderer _renderer;
 
@@ -213,9 +213,9 @@ namespace WackAMole.Game
             }
         }
 
-        private void Options_Changed(object sender, Options.Option e)
+        private void Options_Changed(object sender, GameOptions.Option e)
         {
-            if (e == Options.Option.Game)
+            if (e == GameOptions.Option.Game)
             {
                 _timer.Interval = _options.MoleTimerInterval;
             }
