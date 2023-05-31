@@ -1,0 +1,278 @@
+﻿<Window x:Class="WackAMole.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WackAMole"
+        mc:Ignorable="d"
+        Title="SmartEye Data Reader"
+        MinWidth="1000"
+        MinHeight="600">
+    <Window.Resources>
+        <local:ObjectPresenceToBorderWidthConverter x:Key="op2bw"/>
+        <Style x:Key="FieldLabel" TargetType="Label">
+            <Setter Property="Width" Value="120"/>
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="MinWidth" Value="90"/>
+            <Setter Property="Padding" Value="2"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style TargetType="ComboBox">
+            <Setter Property="MinWidth" Value="90"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style TargetType="CheckBox">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style TargetType="Separator">
+            <Setter Property="Margin" Value="4,8"/>
+        </Style>
+        <Style x:Key="Plane" TargetType="Label">
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="BorderBrush" Value="Red"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+        <Style x:Key="Counter" TargetType="Label">
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Column="0"
+                    MinWidth="200">
+            <StackPanel x:Name="stpSettings">
+                <StackPanel Orientation="Horizontal">
+                    <Label Style="{StaticResource FieldLabel}"
+                        Content="Host"/>
+                    <TextBox x:Name="txbHost"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Label Style="{StaticResource FieldLabel}"
+                           Content="Port"/>
+                    <TextBox x:Name="txbPort"/>
+                </StackPanel>
+                <Separator/>
+                <StackPanel Orientation="Horizontal">
+                    <Label Style="{StaticResource FieldLabel}"
+                           Content="Controller"/>
+                    <ComboBox x:Name="cmbController"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal"
+                            IsEnabled="{Binding IsGazeController}">
+                    <Label Style="{StaticResource FieldLabel}"
+                           Content="dwell time, ms"
+                           HorizontalContentAlignment="Right"/>
+                    <TextBox x:Name="txbDwellTime"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Label Style="{StaticResource FieldLabel}"
+                           Content="Source"/>
+                    <ComboBox x:Name="cmbSource"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Label Style="{StaticResource FieldLabel}"
+                           HorizontalContentAlignment="Right"
+                           Content="is filtered"/>
+                    <CheckBox x:Name="chkSourceFiltered"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Label Style="{StaticResource FieldLabel}"
+                           Content="Use gaze quality"/>
+                    <CheckBox x:Name="chkUseGazeQualityMeasurement"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal"
+                            IsEnabled="{Binding UseGazeQuality}">
+                    <Label Style="{StaticResource FieldLabel}"
+                           HorizontalContentAlignment="Right"
+                           Content="threshold"/>
+                    <TextBox x:Name="txbGazeQualityThreshold"/>
+                </StackPanel>
+                <Separator/>
+                <StackPanel Orientation="Horizontal">
+                    <Label Style="{StaticResource FieldLabel}"
+                           Content="LP filter"/>
+                    <CheckBox x:Name="chkLowPassFilter"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal"
+                            IsEnabled="{Binding IsLowPassFilterEnabled}">
+                    <Label Style="{StaticResource FieldLabel}"
+                           Content="gain"
+                           HorizontalContentAlignment="Right"/>
+                    <TextBox x:Name="txbLowPassFilterGain"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal"
+                            IsEnabled="{Binding IsLowPassFilterEnabled}">
+                    <Label Style="{StaticResource FieldLabel}"
+                           Content="reset delay, ms"
+                           HorizontalContentAlignment="Right"/>
+                    <TextBox x:Name="txbLowPassFilterResetDelay"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal"
+                            IsEnabled="{Binding IsLowPassFilterEnabled}">
+                    <Label Style="{StaticResource FieldLabel}"
+                           HorizontalContentAlignment="Right"
+                           Content="weight damping"/>
+                    <TextBox x:Name="txbLPFWeightDamping"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Label Style="{StaticResource FieldLabel}"
+                           Content="Foc. cell expansion"/>
+                    <TextBox x:Name="txbFocusedCellExpansion"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Label Style="{StaticResource FieldLabel}"
+                           Content="Focus latency, ms"/>
+                    <TextBox x:Name="txbFocusLatency"/>
+                </StackPanel>
+                <Separator/>
+                <StackPanel Orientation="Horizontal">
+                    <Label Style="{StaticResource FieldLabel}"
+                           Content="Go / no-Go"/>
+                    <CheckBox x:Name="chkGoNoGo"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal"
+                            IsEnabled="{Binding IsGoNoGo}">
+                    <Label Style="{StaticResource FieldLabel}"
+                           Content="probability"
+                           HorizontalContentAlignment="Right"/>
+                    <TextBox x:Name="txbNoGoProbability"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Label Style="{StaticResource FieldLabel}"
+                           Content="Action interval, ms"/>
+                    <TextBox x:Name="txbMoleTimerInterval"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Label Style="{StaticResource FieldLabel}"
+                           Content="Mole event rate"/>
+                    <TextBox x:Name="txbMoleEventRate"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Label Style="{StaticResource FieldLabel}"
+                           Content="Shot duration, ms"/>
+                    <TextBox x:Name="txbShotDuration"/>
+                </StackPanel>
+            </StackPanel>
+            <Separator/>
+            <Button x:Name="btnStartStop"
+                    Padding="12px"
+                    Content="Start"
+                    Click="StartStop_Click"/>
+            <TextBlock>
+                <Run>Tests:</Run><LineBreak/>
+                <Run>F5 - DataSource</Run><LineBreak/>
+                <Run>F6 - Parser from *-socketclient2.txt</Run><LineBreak/>
+                <Run>Shift + F6 - Parser (quick mode)</Run><LineBreak/>
+                <Run>F7 - start/stop MouseController</Run><LineBreak/>
+                <Run>F8 - GazeController (1000 samples)</Run><LineBreak/>
+                <Run>F9 - LowPassFilter from *-gazepoint.txt</Run><LineBreak/>
+            </TextBlock>
+            <Label x:Name="lblDebug"
+                    Content="Debug"
+                    Visibility="Collapsed"
+                    Foreground="DarkRed"
+                    FontWeight="Bold"
+                    HorizontalAlignment="Center"/>
+        </StackPanel>
+        <TabControl Grid.Column="1">
+            <TabItem Header="Log">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <WrapPanel x:Name="wrpScreenLogger" Grid.Row="0"/> <!-- filled in code -->
+                    <TextBox Grid.Row="1" x:Name="txbOutput"
+                         VerticalScrollBarVisibility="Auto"
+                         VerticalAlignment="Stretch"
+                         Text="Output: "/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Plane">
+                <Grid>
+                    <Label x:Name="lblFrameID"
+                           Content="0"
+                           HorizontalContentAlignment="Center"/>
+                    <Label x:Name="lblPlane" Style="{StaticResource Plane}"
+                           Margin="24"
+                           BorderThickness="{Binding Content, RelativeSource={RelativeSource Self}, Converter={StaticResource op2bw}, Mode=OneWay}"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="World">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="2*"/>
+                        <RowDefinition Height="1*"/>
+                    </Grid.RowDefinitions>
+                    <StackPanel Grid.Row="1" Grid.Column="0" x:Name="stpLeftMirror"
+                                VerticalAlignment="Center"
+                                Margin="8"
+                                Tag="LeftMirror"
+                                Background="Bisque">
+                        <Label Style="{StaticResource Plane}"
+                               Content="Left mirror"/>
+                        <Label x:Name="lblLeftMirrorCounter"
+                               Style="{StaticResource Counter}"
+                               Content="0"/>
+                    </StackPanel>
+                    <StackPanel Grid.Row="1" Grid.Column="3" x:Name="stpRightMirror"
+                                VerticalAlignment="Center"
+                                Margin="8"
+                                Tag="RightMirror"
+                                Background="Bisque">
+                        <Label Style="{StaticResource Plane}"
+                               Content="Right mirror"/>
+                        <Label x:Name="lblRightMirrorCounter"
+                               Style="{StaticResource Counter}"
+                               Content="0"/>
+                    </StackPanel>
+                    <StackPanel Grid.Row="1" Grid.Column="1" x:Name="stpGame"
+                                Margin="8"
+                                Tag="LeftScreen"
+                                Background="Bisque">
+                        <Label Style="{StaticResource Plane}"
+                                Content="Game"/>
+                        <Label x:Name="lblGameCounter"
+                                Style="{StaticResource Counter}"
+                                Content="0"/>
+                    </StackPanel>
+                    <StackPanel Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" x:Name="stpWindshield"
+                                Margin="8"
+                                Tag="Windshield"
+                                Background="Bisque">
+                        <Label Style="{StaticResource Plane}"
+                                Content="Windshield"/>
+                        <Label x:Name="lblWindshieldCounter"
+                                Style="{StaticResource Counter}"
+                                Content="0"/>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Game">
+                <Grid x:Name="grdGame">
+                    <Label x:Name="lblScore"
+                           HorizontalAlignment="Center"
+                           FontWeight="ExtraBlack"
+                           FontSize="56"
+                           Foreground="Blue"
+                           Grid.ColumnSpan="100"
+                           Content="0"/>
+                </Grid>
+            </TabItem>
+        </TabControl>
+        
+    </Grid>
+</Window>
