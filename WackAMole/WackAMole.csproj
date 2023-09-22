@@ -5,6 +5,8 @@
     <TargetFramework>net6.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
 	<LangVersion>11</LangVersion>
+	<Authors>Oleg Spakov</Authors>
+	<Company>Tampere University</Company>
   </PropertyGroup>
 
   <ItemGroup>
