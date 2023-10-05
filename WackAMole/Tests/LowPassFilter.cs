@@ -27,17 +27,17 @@ namespace WackAMole.Tests
 
                     var p = line.Split('\t');
 
-                    var intersection = new SEClient.Intersection()
+                    var intersection = new SEClient.Cmd.Intersection()
                     {
                         ID = 1,
                         PlaneName = screenName,
-                        Gaze = new SEClient.Point3D()
+                        Gaze = new SEClient.Cmd.Point3D()
                         {
                             X = 0,
                             Y = 0,
                             Z = 0,
                         },
-                        Point = new SEClient.Point2D()
+                        Point = new SEClient.Cmd.Point2D()
                         {
                             X = int.Parse(p[0]),
                             Y = int.Parse(p[1])

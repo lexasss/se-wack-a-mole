@@ -41,9 +41,9 @@ namespace WackAMole.Game
         int _lastCellX = -1;
         int _lastCellY = -1;
 
-        protected override void HandleIntersection(SEClient.Intersection intersection)
+        protected override void HandleIntersection(SEClient.Cmd.Intersection intersection)
         {
-            SEClient.Point2D point = _lowPassFilter.Feed(intersection.Point);
+            SEClient.Cmd.Point2D point = _lowPassFilter.Feed(intersection.Point);
 
             double gridX = (point.X / _screenWidth * _options.CellX);
             double gridY = (point.Y / _screenHeight * _options.CellY);

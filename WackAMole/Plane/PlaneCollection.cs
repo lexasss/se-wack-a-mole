@@ -37,7 +37,7 @@ namespace WackAMole.Plane
         /// Consumes a gaze sample
         /// </summary>
         /// <param name="sample">gae sample</param>
-        public void Feed(ref SEClient.Sample sample)
+        public void Feed(ref SEClient.Cmd.Sample sample)
         {
             foreach (var ints in sample.Intersections)
             {

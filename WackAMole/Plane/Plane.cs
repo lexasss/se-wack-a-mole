@@ -42,7 +42,7 @@
         /// Consumes the gaze point that fell on the plane
         /// </summary>
         /// <param name="intersection"></param>
-        public void Feed(SEClient.Intersection intersection)
+        public void Feed(SEClient.Cmd.Intersection intersection)
         {
             if (!IsEnabled) return;
 
@@ -54,7 +54,7 @@
         readonly string _planeName;
         readonly Logging.FlowLogger _logger = Logging.FlowLogger.Instance;
 
-        protected virtual void HandleIntersection(SEClient.Intersection intersection) { }
+        protected virtual void HandleIntersection(SEClient.Cmd.Intersection intersection) { }
         protected virtual void HandleEvent(Event evt) { }
     }
 }

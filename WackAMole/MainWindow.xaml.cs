@@ -38,8 +38,8 @@ namespace WackAMole
         const string GAME_OPTIONS_FILENAME = "wack_a_mole_options.json";
         const string SE_CLIENT_OPTIONS_FILENAME = "se_client_options.json";
 
-        readonly SEClient.DataSource _dataSource = new ();
-        readonly SEClient.Parser _parser;
+        readonly SEClient.Cmd.DataSource _dataSource = new ();
+        readonly SEClient.Cmd.Parser _parser;
 
         readonly Game.Game _game;
         readonly GameRenderer _gameRenderer;
@@ -59,7 +59,7 @@ namespace WackAMole
             DataContext = this;
 
             var options = GameOptions.Load(GAME_OPTIONS_FILENAME);
-            SEClient.Options.Load(SE_CLIENT_OPTIONS_FILENAME);
+            SEClient.Cmd.Options.Load(SE_CLIENT_OPTIONS_FILENAME);
 
             _allContent = Content;
 
@@ -110,7 +110,7 @@ namespace WackAMole
         private void BindUIControls()
         {
             var gameOptions = GameOptions.Instance;
-            var seClientOptions = SEClient.Options.Instance;
+            var seClientOptions = SEClient.Cmd.Options.Instance;
 
             Utils.UIHelper.InitComboBox(cmbController, gameOptions.Controller, (value) =>
             {
@@ -223,7 +223,7 @@ namespace WackAMole
             _parser.Feed(e);
         }
 
-        private void Parser_PlaneEnter(object _, SEClient.Intersection e)
+        private void Parser_PlaneEnter(object _, SEClient.Cmd.Intersection e)
         {
             Dispatcher.Invoke(() =>
             {
@@ -243,7 +243,7 @@ namespace WackAMole
             });
         }
 
-        private void Parser_Sample(object _, SEClient.Sample e)
+        private void Parser_Sample(object _, SEClient.Cmd.Sample e)
         {
             Dispatcher.Invoke(() =>
             {
@@ -264,7 +264,7 @@ namespace WackAMole
             settings.Save();
 
             GameOptions.Save(GAME_OPTIONS_FILENAME);
-            SEClient.Options.Save(SE_CLIENT_OPTIONS_FILENAME);
+            SEClient.Cmd.Options.Save(SE_CLIENT_OPTIONS_FILENAME);
         }
 
         private async Task RunTest(Func<Task> action)

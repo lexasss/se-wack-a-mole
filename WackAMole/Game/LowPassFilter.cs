@@ -25,7 +25,7 @@ namespace WackAMole.Game
         /// </summary>
         /// <param name="newPoint">gaze point form the new sample</param>
         /// <returns>filtered gaze point</returns>
-        public SEClient.Point2D Feed(SEClient.Point2D newPoint)
+        public SEClient.Cmd.Point2D Feed(SEClient.Cmd.Point2D newPoint)
         {
             if (!pointExists || !_options.LowPassFilterEnabled)
             {
@@ -98,8 +98,8 @@ namespace WackAMole.Game
         // Internal
 
         readonly double _threshold;
-        readonly SEClient.Point2D _filteredPoint = new SEClient.Point2D(); // buffer
-        readonly SEClient.Point2D _realTimePoint = new SEClient.Point2D(); // buffer
+        readonly SEClient.Cmd.Point2D _filteredPoint = new SEClient.Cmd.Point2D(); // buffer
+        readonly SEClient.Cmd.Point2D _realTimePoint = new SEClient.Cmd.Point2D(); // buffer
         readonly GameOptions _options = GameOptions.Instance;
         readonly ScreenLogger _screenLogger;
 

@@ -17,17 +17,17 @@ namespace WackAMole.Tests
 
             Random random = new ();
 
-            SEClient.Intersection intersection = new ()
+            SEClient.Cmd.Intersection intersection = new ()
             {
                 ID = 1,
                 PlaneName = screenName,
-                Gaze = new SEClient.Point3D()
+                Gaze = new SEClient.Cmd.Point3D()
                 {
                     X = random.NextDouble(),
                     Y = random.NextDouble(),
                     Z = 0,
                 },
-                Point = new SEClient.Point2D()
+                Point = new SEClient.Cmd.Point2D()
                 {
                     X = random.NextDouble() * width,
                     Y = random.NextDouble() * height,
@@ -44,13 +44,13 @@ namespace WackAMole.Tests
                     {
                         ID = intersection.ID,
                         PlaneName = screenName,
-                        Gaze = new SEClient.Point3D()
+                        Gaze = new SEClient.Cmd.Point3D()
                         {
                             X = random.NextDouble(),
                             Y = random.NextDouble(),
                             Z = 0,
                         },
-                        Point = new SEClient.Point2D()
+                        Point = new SEClient.Cmd.Point2D()
                         {
                             X = random.NextDouble() * width,
                             Y = random.NextDouble() * height,
