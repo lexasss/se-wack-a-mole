@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Windows;
 
 namespace WackAMole
@@ -174,7 +175,5 @@ namespace WackAMole
             member = value;
             Changed?.Invoke(this, option);
         }
-
-        protected GameOptions() { }
     }
 }
