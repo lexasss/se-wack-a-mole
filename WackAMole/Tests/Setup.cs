@@ -1,7 +1,6 @@
-﻿namespace WackAMole.Tests
+﻿namespace WackAMole.Tests;
+
+internal class Setup
 {
-    internal class Setup
-    {
-        public static bool IsDebugging = false;
-    }
+    public static bool IsDebugging = false;
 }

@@ -28,7 +28,7 @@ namespace WackAMole
 
         public static GameOptions Instance => _instance ??= new ();
 
-        public event EventHandler<Option> Changed;
+        public event EventHandler<Option>? Changed;
 
         // Constant
 
@@ -129,7 +129,7 @@ namespace WackAMole
             {
                 using var reader = new StreamReader(filename);
                 string json = reader.ReadToEnd();
-                _instance = (GameOptions)JsonSerializer.Deserialize(json, typeof(GameOptions));
+                _instance = JsonSerializer.Deserialize<GameOptions>(json);
             }
 
             return Instance;
@@ -154,7 +154,7 @@ namespace WackAMole
 
         // Internal
 
-        static GameOptions _instance = null;
+        static GameOptions? _instance = null;
 
         int _dwellTime = 500;                   // ms
         bool _goNoGo = false;

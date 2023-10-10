@@ -7,6 +7,15 @@
 	<LangVersion>11</LangVersion>
 	<Authors>Oleg Spakov</Authors>
 	<Company>Tampere University</Company>
+	<Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>$(DefineConstants);USE_TCP</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>$(DefineConstants);USE_TCP</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>

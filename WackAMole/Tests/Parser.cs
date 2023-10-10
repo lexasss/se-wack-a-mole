@@ -3,40 +3,39 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace WackAMole.Tests
+namespace WackAMole.Tests;
+
+internal class Parser
 {
-    internal class Parser
+    public static async Task Run(SEClient.Cmd.Parser parser, bool isFast)
     {
-        public static async Task Run(SEClient.Cmd.Parser parser, bool isFast)
+        string filename = "test-data-socketclient2.txt";
+        if (!File.Exists(filename))
         {
-            string filename = "test-data-socketclient2.txt";
-            if (!File.Exists(filename))
+            MessageBox.Show($"File '{filename}' does not exist in the app folder.", "Wack-a-Mole : Test", MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
+        }
+
+        using (var stream = new StreamReader(filename))
+        {
+            string line = "";
+
+            Func<Task> parseLine = () => {
+                parser.Feed(line);
+                return Task.CompletedTask;
+            };
+
+            while (!stream.EndOfStream)
             {
-                MessageBox.Show($"File '{filename}' does not exist in the app folder.", "Wack-a-Mole : Test", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
-            using (var stream = new StreamReader(filename))
-            {
-                string line = "";
-
-                Func<Task> parseLine = () => {
-                    parser.Feed(line);
-                    return Task.CompletedTask;
-                };
-
-                while (!stream.EndOfStream)
+                line = stream.ReadLine() ?? "";
+                if (isFast)
                 {
-                    line = stream.ReadLine();
-                    if (isFast)
-                    {
-                        await Task.Run(parseLine);
-                    }
-                    else
-                    {
-                        parser.Feed(line);
-                        await Task.Delay(1);
-                    }
+                    await Task.Run(parseLine);
+                }
+                else
+                {
+                    parser.Feed(line);
+                    await Task.Delay(1);
                 }
             }
         }
