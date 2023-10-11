@@ -416,22 +416,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                 _game.Stop();
             });
         }
-        else if (e.Key == Key.F11)
-        {
-            if (WindowStyle == WindowStyle.None)
-            {
-                WindowStyle = WindowStyle.SingleBorderWindow;
-                WindowState = WindowState.Normal;
-                Content = _allContent;
-            }
-            else
-            {
-                WindowStyle = WindowStyle.None;
-                WindowState = WindowState.Maximized;
-                Content = grdGame;
-            }
-        }
-
     }
 
     private async void StartStop_Click(object? _, RoutedEventArgs e)
@@ -467,6 +451,22 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             _dataSource.Start(txbHost.Text, txbPort.Text, Tests.Setup.IsDebugging);
 #endif
             _game.Start();
+        }
+    }
+
+    private void FullScreen_Click(object sender, RoutedEventArgs e)
+    {
+        if (WindowStyle == WindowStyle.None)
+        {
+            WindowStyle = WindowStyle.SingleBorderWindow;
+            WindowState = WindowState.Normal;
+            Content = _allContent;
+        }
+        else
+        {
+            WindowStyle = WindowStyle.None;
+            WindowState = WindowState.Maximized;
+            Content = grdGame;
         }
     }
 }
