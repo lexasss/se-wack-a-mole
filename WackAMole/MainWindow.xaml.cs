@@ -67,6 +67,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         DataContext = this;
 
         var options = GameOptions.Load(GAME_OPTIONS_FILENAME);
+        stpGame.Tag = options.ScreenName;
 
         _allContent = Content;
 

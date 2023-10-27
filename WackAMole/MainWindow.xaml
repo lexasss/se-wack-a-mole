@@ -187,7 +187,8 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
-                    <WrapPanel x:Name="wrpScreenLogger" Grid.Row="0"/> <!-- filled in code -->
+                    <WrapPanel x:Name="wrpScreenLogger" Grid.Row="0"/>
+                    <!-- filled in code -->
                     <TextBox Grid.Row="1" x:Name="txbOutput"
                          VerticalScrollBarVisibility="Auto"
                          VerticalAlignment="Stretch"
@@ -207,10 +208,12 @@
             <TabItem Header="World">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*"/>
-                        <ColumnDefinition Width="2*"/>
-                        <ColumnDefinition Width="2*"/>
-                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="95*"/>
+                        <ColumnDefinition Width="24*"/>
+                        <ColumnDefinition Width="177*"/>
+                        <ColumnDefinition Width="177*"/>
+                        <ColumnDefinition Width="177*"/>
+                        <ColumnDefinition Width="133*"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="2*"/>
@@ -218,18 +221,18 @@
                     </Grid.RowDefinitions>
                     <StackPanel Grid.Row="1" Grid.Column="0" x:Name="stpLeftMirror"
                                 VerticalAlignment="Center"
-                                Margin="8"
+                                Margin="8,0,8,0"
                                 Tag="LeftMirror"
-                                Background="Bisque">
+                                Background="Bisque" Grid.ColumnSpan="2">
                         <Label Style="{StaticResource Plane}"
                                Content="Left mirror"/>
                         <Label x:Name="lblLeftMirrorCounter"
                                Style="{StaticResource Counter}"
                                Content="0"/>
                     </StackPanel>
-                    <StackPanel Grid.Row="1" Grid.Column="3" x:Name="stpRightMirror"
+                    <StackPanel Grid.Row="1" Grid.Column="5" x:Name="stpRightMirror"
                                 VerticalAlignment="Center"
-                                Margin="8"
+                                Margin="8,0,8,0"
                                 Tag="RightMirror"
                                 Background="Bisque">
                         <Label Style="{StaticResource Plane}"
@@ -238,9 +241,9 @@
                                Style="{StaticResource Counter}"
                                Content="0"/>
                     </StackPanel>
-                    <StackPanel Grid.Row="1" Grid.Column="1" x:Name="stpGame"
-                                Margin="8"
-                                Tag="LeftScreen"
+                    <StackPanel Grid.Row="1" Grid.Column="3" x:Name="stpGame"
+                                Margin="8,8,8,8"
+                                Tag="CentralConsole"
                                 Background="Bisque">
                         <Label Style="{StaticResource Plane}"
                                 Content="Game"/>
@@ -248,8 +251,8 @@
                                 Style="{StaticResource Counter}"
                                 Content="0"/>
                     </StackPanel>
-                    <StackPanel Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" x:Name="stpWindshield"
-                                Margin="8"
+                    <StackPanel Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="3" x:Name="stpWindshield"
+                                Margin="8,8,8,8"
                                 Tag="Windshield"
                                 Background="Bisque">
                         <Label Style="{StaticResource Plane}"

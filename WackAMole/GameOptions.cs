@@ -32,12 +32,12 @@ namespace WackAMole
 
         // Constant
 
-        public int CellX { get; } = 4;
-        public int CellY { get; } = 2;
-        public string ScreenName { get; } = "LeftScreen";
-        public int ScreenWidth { get; } = (int)SystemParameters.PrimaryScreenWidth;
-        public int ScreenHeight { get; } = (int)SystemParameters.PrimaryScreenHeight;
-        public int PointsPerMole { get; } = 5;
+        public int CellX { get; init;  } = 4;
+        public int CellY { get; init; } = 2;
+        public string ScreenName { get; init; } = "CentralConsole";
+        public int ScreenWidth { get; init; } = (int)SystemParameters.PrimaryScreenWidth;
+        public int ScreenHeight { get; init; } = (int)SystemParameters.PrimaryScreenHeight;
+        public int PointsPerMole { get; init; } = 5;
 
         // Adjustable
 
