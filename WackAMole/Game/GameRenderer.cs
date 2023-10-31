@@ -2,7 +2,9 @@
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
 using System.Windows.Threading;
 
 namespace WackAMole.Game;
@@ -28,6 +30,12 @@ public class GameRenderer
             X = x;
             Y = y;
         }
+    }
+
+    public bool IsGazeVisible
+    {
+        get => _gaze.Visibility == Visibility.Visible;
+        set => _gaze.Visibility = value ? Visibility.Visible : Visibility.Collapsed;
     }
 
     /// <summary>
@@ -101,6 +109,19 @@ public class GameRenderer
             IsHitTestVisible = false,
         };
         grid.Children.Add(_focus);
+
+        _gaze = new Ellipse()
+        {
+            Width = GazeSize,
+            Height = GazeSize,
+            Fill = Brushes.Blue,
+            HorizontalAlignment = HorizontalAlignment.Left,
+            VerticalAlignment = VerticalAlignment.Top,
+            IsHitTestVisible = false,
+        };
+        Grid.SetColumnSpan(_gaze, int.MaxValue);
+        Grid.SetRowSpan(_gaze, int.MaxValue);
+        grid.Children.Add(_gaze);
 
         _mole = _mole1;
     }
@@ -178,13 +199,26 @@ public class GameRenderer
         });
     }
 
+    /// <summary>
+    /// Displays the gaze cursor at a give location
+    /// </summary>
+    /// <param name="X">Location X, pixels</param>
+    /// <param name="Y">Location Y, pixels</param>
+    public void SetGaze(double X, double Y)
+    {
+        _gaze.Margin = new Thickness(X - GazeSize/2, Y - GazeSize/2, 0, 0);
+    }
+
     // Internal
+
+    static readonly int GazeSize = 8;
 
     readonly Label _score;
     readonly Image _mole1;
     readonly Image _mole2;
     readonly Image _shot;
     readonly Image _focus;
+    readonly Ellipse _gaze;
     readonly Dispatcher _dispatcher;
     readonly GameOptions _options = GameOptions.Instance;
 

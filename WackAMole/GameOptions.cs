@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Windows;
 
 namespace WackAMole
@@ -63,6 +62,16 @@ namespace WackAMole
             get => _noGoProbability;
             set => Update(ref _noGoProbability, value, Option.Game);
         }
+        public bool UseSmartGazeCorrection
+        {
+            get => _useSmartGazeCorrection;
+            set => Update(ref _useSmartGazeCorrection, value, Option.Game);     // well, not really a "game" option
+        }
+        public bool ShowGazeCursor
+        {
+            get => _showGazeCursor;
+            set => Update(ref _showGazeCursor, value, Option.Game);
+        }
 
         // Low-pass filter
 
@@ -104,6 +113,8 @@ namespace WackAMole
             get => _controller;
             set => Update(ref _controller, value, Option.Controller);
         }
+
+        // General
 
         public int DwellTime
         {
@@ -169,6 +180,8 @@ namespace WackAMole
         double _currentCellExpansion = 0.1;     // share of the cell size
         int _shotDuration = 200;                // ms
         double _moleEventRate = 0.5;            // 0..1
+        bool _useSmartGazeCorrection = false;
+        bool _showGazeCursor = false;
 
         private void Update<T>(ref T member, T value, Option option = Option.General)
         {

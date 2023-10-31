@@ -11,7 +11,7 @@
     <Window.Resources>
         <local:ObjectPresenceToBorderWidthConverter x:Key="op2bw"/>
         <Style x:Key="FieldLabel" TargetType="Label">
-            <Setter Property="Width" Value="120"/>
+            <Setter Property="Width" Value="130"/>
         </Style>
         <Style TargetType="TextBox">
             <Setter Property="MinWidth" Value="90"/>
@@ -45,141 +45,160 @@
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <StackPanel Grid.Column="0"
-                    MinWidth="200">
-            <StackPanel x:Name="stpSettings">
-                <StackPanel Orientation="Horizontal">
-                    <Label Style="{StaticResource FieldLabel}"
-                        Content="Host"/>
-                    <TextBox x:Name="txbHost"/>
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <ScrollViewer Grid.Row="0"
+                          Padding="0,0,4,0">
+                <StackPanel x:Name="stpSettings">
+                    <StackPanel Orientation="Horizontal">
+                        <Label Style="{StaticResource FieldLabel}"
+                            Content="Host"/>
+                        <TextBox x:Name="txbHost"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Style="{StaticResource FieldLabel}"
+                               Content="Port"/>
+                        <TextBox x:Name="txbPort"/>
+                    </StackPanel>
+                    <Separator/>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Style="{StaticResource FieldLabel}"
+                               Content="Controller"/>
+                        <ComboBox x:Name="cmbController"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal"
+                                IsEnabled="{Binding IsGazeController}">
+                        <Label Style="{StaticResource FieldLabel}"
+                               Content="dwell time, ms"
+                               HorizontalContentAlignment="Right"/>
+                        <TextBox x:Name="txbDwellTime"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Style="{StaticResource FieldLabel}"
+                               Content="Source"/>
+                        <ComboBox x:Name="cmbSource"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Style="{StaticResource FieldLabel}"
+                               HorizontalContentAlignment="Right"
+                               Content="is filtered"/>
+                        <CheckBox x:Name="chkSourceFiltered"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Style="{StaticResource FieldLabel}"
+                               Content="Use gaze quality"/>
+                        <CheckBox x:Name="chkUseGazeQualityMeasurement"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal"
+                                IsEnabled="{Binding UseGazeQuality}">
+                        <Label Style="{StaticResource FieldLabel}"
+                               HorizontalContentAlignment="Right"
+                               Content="threshold"/>
+                        <TextBox x:Name="txbGazeQualityThreshold"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Style="{StaticResource FieldLabel}"
+                               Content="Smart gaze correction"/>
+                        <CheckBox x:Name="chkUseSmartGazeCorrection"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Style="{StaticResource FieldLabel}"
+                               Content="Show gaze cursor"/>
+                        <CheckBox x:Name="chkShowGazeCursor"/>
+                    </StackPanel>
+                    <Separator/>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Style="{StaticResource FieldLabel}"
+                               Content="LP filter"/>
+                        <CheckBox x:Name="chkLowPassFilter"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal"
+                                IsEnabled="{Binding IsLowPassFilterEnabled}">
+                        <Label Style="{StaticResource FieldLabel}"
+                               Content="gain"
+                               HorizontalContentAlignment="Right"/>
+                        <TextBox x:Name="txbLowPassFilterGain"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal"
+                                IsEnabled="{Binding IsLowPassFilterEnabled}">
+                        <Label Style="{StaticResource FieldLabel}"
+                               Content="reset delay, ms"
+                               HorizontalContentAlignment="Right"/>
+                        <TextBox x:Name="txbLowPassFilterResetDelay"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal"
+                                IsEnabled="{Binding IsLowPassFilterEnabled}">
+                        <Label Style="{StaticResource FieldLabel}"
+                               HorizontalContentAlignment="Right"
+                               Content="weight damping"/>
+                        <TextBox x:Name="txbLPFWeightDamping"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Style="{StaticResource FieldLabel}"
+                               Content="Foc. cell expansion"/>
+                        <TextBox x:Name="txbFocusedCellExpansion"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Style="{StaticResource FieldLabel}"
+                               Content="Focus latency, ms"/>
+                        <TextBox x:Name="txbFocusLatency"/>
+                    </StackPanel>
+                    <Separator/>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Style="{StaticResource FieldLabel}"
+                               Content="Go / no-Go"/>
+                        <CheckBox x:Name="chkGoNoGo"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal"
+                                IsEnabled="{Binding IsGoNoGo}">
+                        <Label Style="{StaticResource FieldLabel}"
+                               Content="probability"
+                               HorizontalContentAlignment="Right"/>
+                        <TextBox x:Name="txbNoGoProbability"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Style="{StaticResource FieldLabel}"
+                               Content="Action interval, ms"/>
+                        <TextBox x:Name="txbMoleTimerInterval"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Style="{StaticResource FieldLabel}"
+                               Content="Mole event rate"/>
+                        <TextBox x:Name="txbMoleEventRate"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Style="{StaticResource FieldLabel}"
+                               Content="Shot duration, ms"/>
+                        <TextBox x:Name="txbShotDuration"/>
+                    </StackPanel>
                 </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <Label Style="{StaticResource FieldLabel}"
-                           Content="Port"/>
-                    <TextBox x:Name="txbPort"/>
-                </StackPanel>
-                <Separator/>
-                <StackPanel Orientation="Horizontal">
-                    <Label Style="{StaticResource FieldLabel}"
-                           Content="Controller"/>
-                    <ComboBox x:Name="cmbController"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal"
-                            IsEnabled="{Binding IsGazeController}">
-                    <Label Style="{StaticResource FieldLabel}"
-                           Content="dwell time, ms"
-                           HorizontalContentAlignment="Right"/>
-                    <TextBox x:Name="txbDwellTime"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <Label Style="{StaticResource FieldLabel}"
-                           Content="Source"/>
-                    <ComboBox x:Name="cmbSource"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <Label Style="{StaticResource FieldLabel}"
-                           HorizontalContentAlignment="Right"
-                           Content="is filtered"/>
-                    <CheckBox x:Name="chkSourceFiltered"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <Label Style="{StaticResource FieldLabel}"
-                           Content="Use gaze quality"/>
-                    <CheckBox x:Name="chkUseGazeQualityMeasurement"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal"
-                            IsEnabled="{Binding UseGazeQuality}">
-                    <Label Style="{StaticResource FieldLabel}"
-                           HorizontalContentAlignment="Right"
-                           Content="threshold"/>
-                    <TextBox x:Name="txbGazeQualityThreshold"/>
-                </StackPanel>
-                <Separator/>
-                <StackPanel Orientation="Horizontal">
-                    <Label Style="{StaticResource FieldLabel}"
-                           Content="LP filter"/>
-                    <CheckBox x:Name="chkLowPassFilter"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal"
-                            IsEnabled="{Binding IsLowPassFilterEnabled}">
-                    <Label Style="{StaticResource FieldLabel}"
-                           Content="gain"
-                           HorizontalContentAlignment="Right"/>
-                    <TextBox x:Name="txbLowPassFilterGain"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal"
-                            IsEnabled="{Binding IsLowPassFilterEnabled}">
-                    <Label Style="{StaticResource FieldLabel}"
-                           Content="reset delay, ms"
-                           HorizontalContentAlignment="Right"/>
-                    <TextBox x:Name="txbLowPassFilterResetDelay"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal"
-                            IsEnabled="{Binding IsLowPassFilterEnabled}">
-                    <Label Style="{StaticResource FieldLabel}"
-                           HorizontalContentAlignment="Right"
-                           Content="weight damping"/>
-                    <TextBox x:Name="txbLPFWeightDamping"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <Label Style="{StaticResource FieldLabel}"
-                           Content="Foc. cell expansion"/>
-                    <TextBox x:Name="txbFocusedCellExpansion"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <Label Style="{StaticResource FieldLabel}"
-                           Content="Focus latency, ms"/>
-                    <TextBox x:Name="txbFocusLatency"/>
-                </StackPanel>
-                <Separator/>
-                <StackPanel Orientation="Horizontal">
-                    <Label Style="{StaticResource FieldLabel}"
-                           Content="Go / no-Go"/>
-                    <CheckBox x:Name="chkGoNoGo"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal"
-                            IsEnabled="{Binding IsGoNoGo}">
-                    <Label Style="{StaticResource FieldLabel}"
-                           Content="probability"
-                           HorizontalContentAlignment="Right"/>
-                    <TextBox x:Name="txbNoGoProbability"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <Label Style="{StaticResource FieldLabel}"
-                           Content="Action interval, ms"/>
-                    <TextBox x:Name="txbMoleTimerInterval"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <Label Style="{StaticResource FieldLabel}"
-                           Content="Mole event rate"/>
-                    <TextBox x:Name="txbMoleEventRate"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <Label Style="{StaticResource FieldLabel}"
-                           Content="Shot duration, ms"/>
-                    <TextBox x:Name="txbShotDuration"/>
-                </StackPanel>
+            </ScrollViewer>
+
+            <StackPanel Grid.Row="1">
+                <Button x:Name="btnStartStop"
+                        Padding="12px"
+                        Content="Start"
+                        Click="StartStop_Click"/>
+                <TextBlock>
+                    <Run>Tests:</Run><LineBreak/>
+                    <Run>F5 - DataSource</Run><LineBreak/>
+                    <Run>F6 - Parser from *-socketclient2.txt</Run><LineBreak/>
+                    <Run>Shift + F6 - Parser (quick mode)</Run><LineBreak/>
+                    <Run>F7 - start/stop MouseController</Run><LineBreak/>
+                    <Run>F8 - GazeController (1000 samples)</Run><LineBreak/>
+                    <Run>F9 - LowPassFilter from *-gazepoint.txt</Run><LineBreak/>
+                </TextBlock>
+                <Label x:Name="lblDebug"
+                        Content="Debug"
+                        Visibility="Collapsed"
+                        Foreground="DarkRed"
+                        FontWeight="Bold"
+                        HorizontalAlignment="Center"/>
             </StackPanel>
-            <Button x:Name="btnStartStop"
-                    Padding="12px"
-                    Content="Start"
-                    Click="StartStop_Click"/>
-            <TextBlock>
-                <Run>Tests:</Run><LineBreak/>
-                <Run>F5 - DataSource</Run><LineBreak/>
-                <Run>F6 - Parser from *-socketclient2.txt</Run><LineBreak/>
-                <Run>Shift + F6 - Parser (quick mode)</Run><LineBreak/>
-                <Run>F7 - start/stop MouseController</Run><LineBreak/>
-                <Run>F8 - GazeController (1000 samples)</Run><LineBreak/>
-                <Run>F9 - LowPassFilter from *-gazepoint.txt</Run><LineBreak/>
-            </TextBlock>
-            <Label x:Name="lblDebug"
-                    Content="Debug"
-                    Visibility="Collapsed"
-                    Foreground="DarkRed"
-                    FontWeight="Bold"
-                    HorizontalAlignment="Center"/>
-        </StackPanel>
+        </Grid>
         <TabControl Grid.Column="1">
             <TabItem Header="Log">
                 <Grid>
@@ -242,6 +261,7 @@
                                Content="0"/>
                     </StackPanel>
                     <StackPanel Grid.Row="1" Grid.Column="3" x:Name="stpGame"
+                                VerticalAlignment="Center"
                                 Margin="8,8,8,8"
                                 Tag="CentralConsole"
                                 Background="Bisque">

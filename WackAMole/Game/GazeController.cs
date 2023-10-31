@@ -13,18 +13,19 @@ namespace WackAMole.Game;
 /// <summary>
 /// Uses <see cref="Sample"/> and/or <see cref="Intersection"/> to play the game 
 /// </summary>
-public class GazeController : Plane.Plane
+internal class GazeController : Plane.Plane
 {
     /// <summary>
     /// Constructor
     /// </summary>
     /// <param name="game">Game instance</param>
     /// <param name="screenName">SmartEye screen name where the game is shown</param>
-    public GazeController(Game game, string screenName) : base(screenName)
+    public GazeController(Game game, string screenName, GazeCorrector gazeCorrector) : base(screenName)
     {
         _screenWidth = _options.ScreenWidth;
         _screenHeight = _options.ScreenHeight;
         _game = game;
+        _gazeCorrector = gazeCorrector;
 
         _lowPassFilter = new LowPassFilter(_options.ScreenWidth / _options.CellX * 0.7);
 
@@ -39,6 +40,7 @@ public class GazeController : Plane.Plane
     readonly Game _game;
     readonly GameOptions _options = GameOptions.Instance;
     readonly LowPassFilter _lowPassFilter;
+    readonly GazeCorrector _gazeCorrector;
 
     CancellationTokenSource? _cancelWaiting = null;
 
@@ -51,8 +53,11 @@ public class GazeController : Plane.Plane
     {
         Point2D point = _lowPassFilter.Feed(intersection.Point);
 
-        double gridX = (point.X / _screenWidth * _options.CellX);
-        double gridY = (point.Y / _screenHeight * _options.CellY);
+        point = _gazeCorrector.Feed(point, _screenWidth, _screenHeight);
+        _game.SetGaze(point.X, point.Y);
+
+        double gridX = point.X / _screenWidth * _options.CellX;
+        double gridY = point.Y / _screenHeight * _options.CellY;
 
         int cellX = (int)gridX;
         int cellY = (int)gridY;

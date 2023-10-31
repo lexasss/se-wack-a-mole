@@ -2,12 +2,15 @@
 using System;
 using System.Collections.Generic;
 using System.Timers;
+using System.Windows;
 
 namespace WackAMole.Game;
 
 [AllowScreenLog]
-public class Game
+internal class Game
 {
+    public event EventHandler<Mole>? MoleVisibilityChanged;
+
     /// <summary>
     /// Constructor
     /// </summary>
@@ -130,6 +133,16 @@ public class Game
         cell.Shoot();
     }
 
+    /// <summary>
+    /// Displays the gaze cursor
+    /// </summary>
+    /// <param name="X">Location X, pixels</param>
+    /// <param name="Y">Location Y, pixels</param>
+    public void SetGaze(double X, double Y)
+    {
+        _renderer.SetGaze(X, Y);
+    }
+
     // Internal
 
     readonly List<Cell> _cells = new();
@@ -166,6 +179,8 @@ public class Game
         {
             _renderer.Hide(GameRenderer.Target.Mole);
         }
+
+        MoleVisibilityChanged?.Invoke(this, _mole);
 
         _logger.Add(LogSource.Game, "mole", _mole.IsVisible ? "shown" : "hidden", $"{_mole.X},{_mole.Y}", _mole.Type.ToString().ToLower());
     }
@@ -220,6 +235,7 @@ public class Game
         if (e == GameOptions.Option.Game)
         {
             _timer.Interval = _options.MoleTimerInterval;
+            _renderer.IsGazeVisible = _options.ShowGazeCursor;
         }
     }
 }

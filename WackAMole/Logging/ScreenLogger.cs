@@ -43,6 +43,10 @@ public class ScreenLogger
         /// cell focused/unfocused events
         /// </summary>
         Game,
+        /// <summary>
+        /// gaze correction
+        /// </summary>
+        Corrector,
     }
 
     /// <summary>

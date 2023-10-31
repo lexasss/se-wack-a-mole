@@ -90,8 +90,12 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
         _gameRenderer = new GameRenderer(grdGame, lblScore);
         _game = new Game.Game(_gameRenderer);
-        _gazeController = new GazeController(_game, options.ScreenName);
-        _mouseController = new MouseController(_game, grdGame)
+
+        var gazeCorrector = new GazeCorrector();
+        _game.MoleVisibilityChanged += gazeCorrector.MoleVisibilityChangeHandler;
+
+        _gazeController = new GazeController(_game, options.ScreenName, gazeCorrector);
+        _mouseController = new MouseController(_game, grdGame, gazeCorrector)
         {
             IsEnabled = false
         };
@@ -198,6 +202,14 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         Utils.UIHelper.InitTextBox(txbGazeQualityThreshold, seClientOptions.GazeQualityThreshold, (value) =>
         {
             seClientOptions.GazeQualityThreshold = value;
+        });
+        Utils.UIHelper.InitCheckBox(chkUseSmartGazeCorrection, gameOptions.UseSmartGazeCorrection, (value) =>
+        {
+            gameOptions.UseSmartGazeCorrection = value;
+        });
+        Utils.UIHelper.InitCheckBox(chkShowGazeCursor, gameOptions.ShowGazeCursor, (value) =>
+        {
+            gameOptions.ShowGazeCursor = value;
         });
     }
 
