@@ -7,6 +7,46 @@ namespace WackAMole.Utils;
 internal static class Statistics
 {
     /// <summary>
+    /// Note: specified list would be mutated in the process.
+    /// </summary>
+    public static T Median<T>(this IList<T> list) where T : IComparable<T>
+    {
+        return list.Count == 0 ? default! : list.NthOrderStatistic((list.Count - 1) / 2);
+    }
+
+    public static double Median<T>(this IEnumerable<T> sequence, Func<T, double> getValue)
+    {
+        if (sequence.Count() == 0)
+            return 0;
+
+        var list = sequence.Select(getValue).ToList();
+        var mid = (list.Count - 1) / 2;
+        return list.NthOrderStatistic(mid);
+    }
+
+    public static double Mean<T>(this IEnumerable<T> sequence, Func<T, double> getValue)
+    {
+        int count = Math.Max(sequence.Count(), 1);
+
+        double result = 0;
+        foreach (var item in sequence)
+        {
+            result += getValue(item);
+        }
+
+        return result / count;
+    }
+
+    // Internal
+
+    private static void Swap<T>(this IList<T> list, int i, int j)
+    {
+        if (i == j)   //This check is not required but Partition function may make many calls so its for perf reason
+            return;
+        (list[j], list[i]) = (list[i], list[j]);
+    }
+
+    /// <summary>
     /// Partitions the given list around a pivot element such that all elements on left of pivot are <= pivot
     /// and the ones at thr right are > pivot. This method can be used for sorting, N-order statistics such as
     /// as median finding algorithms.
@@ -34,7 +74,7 @@ internal static class Statistics
     /// Note: specified list would be mutated in the process.
     /// Reference: Introduction to Algorithms 3rd Edition, Corman et al, pp 216
     /// </summary>
-    public static T NthOrderStatistic<T>(this IList<T> list, int n, Random? rnd = null) where T : IComparable<T>
+    private static T NthOrderStatistic<T>(this IList<T> list, int n, Random? rnd = null) where T : IComparable<T>
     {
         return NthOrderStatistic(list, n, 0, list.Count - 1, rnd);
     }
@@ -51,43 +91,5 @@ internal static class Statistics
             else
                 start = pivotIndex + 1;
         }
-    }
-
-    public static void Swap<T>(this IList<T> list, int i, int j)
-    {
-        if (i == j)   //This check is not required but Partition function may make many calls so its for perf reason
-            return;
-        (list[j], list[i]) = (list[i], list[j]);
-    }
-
-    /// <summary>
-    /// Note: specified list would be mutated in the process.
-    /// </summary>
-    public static T Median<T>(this IList<T> list) where T : IComparable<T>
-    {
-        return list.NthOrderStatistic((list.Count - 1) / 2);
-    }
-
-    public static double Median<T>(this IEnumerable<T> sequence, Func<T, double> getValue)
-    {
-        if (sequence.Count() == 0)
-            return 0;
-
-        var list = sequence.Select(getValue).ToList();
-        var mid = (list.Count - 1) / 2;
-        return list.NthOrderStatistic(mid);
-    }
-
-    public static double Mean<T>(this IEnumerable<T> sequence, Func<T, double> getValue)
-    {
-        int count = Math.Max(sequence.Count(), 1);
-
-        double result = 0;
-        foreach (var item in sequence)
-        {
-            result += getValue(item);
-        }
-
-        return result / count;
     }
 }

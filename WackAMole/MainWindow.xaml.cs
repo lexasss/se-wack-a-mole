@@ -9,6 +9,7 @@ using System.Windows.Input;
 using WackAMole.Plane;
 using WackAMole.Game;
 using WackAMole.Logging;
+using WackAMole.Utils;
 
 namespace WackAMole;
 
@@ -26,7 +27,7 @@ public class ObjectPresenceToBorderWidthConverter : IValueConverter
     }
 }
 
-public partial class MainWindow : Window, INotifyPropertyChanged
+public partial class MainWindow : Window, INotifyPropertyChanged, IDisposable
 {
     public bool IsGazeController => (string)cmbController.SelectedItem == ControllerType.Gaze.ToString();
     public bool IsGoNoGo => chkGoNoGo.IsChecked ?? false;
@@ -34,31 +35,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     public bool UseGazeQuality => chkUseGazeQualityMeasurement.IsChecked ?? false;
 
     public event PropertyChangedEventHandler? PropertyChanged;
-
-    const string GAME_OPTIONS_FILENAME = "wack_a_mole_options.json";
-    const string SE_CLIENT_OPTIONS_FILENAME = "se_client_options.json";
-
-#if USE_TCP
-    readonly SEClient.Tcp.Client _tcpClient = new();
-#else
-    readonly SEClient.Cmd.DataSource _dataSource = new ();
-    readonly SEClient.Cmd.Parser _parser;
-#endif
-
-    readonly Game.Game _game;
-    readonly GameRenderer _gameRenderer;
-    readonly MouseController _mouseController;
-    readonly GazeController _gazeController;
-    readonly PlaneCollection _planes;
-    readonly PlaneRenderer _planeRenderer;
-
-    readonly object _allContent;
-
-    CancellationTokenSource? _gameTestCancellation;
-
-#if USE_TCP
-    string _currentIntersectionName = "";
-#endif
 
     public MainWindow()
     {
@@ -125,6 +101,40 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         options.Changed += Options_Changed;
         Options_Changed(options, GameOptions.Option.Controller);
     }
+
+    public void Dispose()
+    {
+        _game.Dispose();
+        _tcpClient.Dispose();
+    }
+
+
+    // Internal
+
+    const string GAME_OPTIONS_FILENAME = "wack_a_mole_options.json";
+    const string SE_CLIENT_OPTIONS_FILENAME = "se_client_options.json";
+
+#if USE_TCP
+    readonly SEClient.Tcp.Client _tcpClient = new();
+#else
+    readonly SEClient.Cmd.DataSource _dataSource = new ();
+    readonly SEClient.Cmd.Parser _parser;
+#endif
+
+    readonly Game.Game _game;
+    readonly GameRenderer _gameRenderer;
+    readonly MouseController _mouseController;
+    readonly GazeController _gazeController;
+    readonly PlaneCollection _planes;
+    readonly PlaneRenderer _planeRenderer;
+
+    readonly object _allContent;
+
+    CancellationTokenSource? _gameTestCancellation;
+
+#if USE_TCP
+    string _currentIntersectionName = "";
+#endif
 
     private void BindUIControls()
     {
@@ -458,7 +468,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
             _planeRenderer.Reset();
 #if USE_TCP
-            _tcpClient?.Connect(txbHost.Text, int.Parse(txbPort.Text), Tests.Setup.IsDebugging);
+            _tcpClient.Connect(txbHost.Text, int.Parse(txbPort.Text), Tests.Setup.IsDebugging);
 #else
             _parser.Reset();
             _dataSource.Start(txbHost.Text, txbPort.Text, Tests.Setup.IsDebugging);

@@ -2,12 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Timers;
-using System.Windows;
 
 namespace WackAMole.Game;
 
 [AllowScreenLog]
-internal class Game
+internal class Game : IDisposable
 {
     public event EventHandler<Mole>? MoleVisibilityChanged;
 
@@ -143,6 +142,11 @@ internal class Game
         _renderer.SetGaze(X, Y);
     }
 
+    public void Dispose()
+    {
+        _timer.Dispose();
+    }
+
     // Internal
 
     readonly List<Cell> _cells = new();
@@ -170,7 +174,7 @@ internal class Game
 
         if (_mole.IsVisible)
         {
-            var cellIndex = _mole.IsVisible ? _mole.Y * _options.CellX + _mole.X : -1;
+            var cellIndex = _mole.Y * _options.CellX + _mole.X;
             _cells[cellIndex].CanBeActivated = true;
             _renderer.SetMoleType(_mole.Type);
             _renderer.Show(GameRenderer.Target.Mole, _mole.X, _mole.Y);
