@@ -31,8 +31,8 @@ namespace WackAMole
 
         // Constant
 
-        public int CellX { get; init;  } = 4;
-        public int CellY { get; init; } = 2;
+        public int CellX { get; init;  } = 3;
+        public int CellY { get; init; } = 1;
         public string ScreenName { get; init; } = "CentralConsole";
         public int ScreenWidth { get; init; } = (int)SystemParameters.PrimaryScreenWidth;
         public int ScreenHeight { get; init; } = (int)SystemParameters.PrimaryScreenHeight;
