@@ -228,8 +228,13 @@ public partial class MainWindow : Window, INotifyPropertyChanged, IDisposable
         var logger = FlowLogger.Instance;
         if (logger.HasRecords)
         {
+            var timestamp = $"{DateTime.Now:u}";
             logger.IsEnabled = false;
-            logger.SaveTo($"wack-a-mole_{DateTime.Now:u}.txt".ToPath());
+
+            if (logger.SaveTo($"wack-a-mole_{timestamp}.txt".ToPath()) == SavingResult.Save)
+            {
+                Logging.Statistics.Instance.SaveTo($"wack-a-mole_{timestamp}_stat.txt".ToPath());
+            }
         }
     }
 
@@ -375,7 +380,11 @@ public partial class MainWindow : Window, INotifyPropertyChanged, IDisposable
 
     private async void MainWindow_KeyDown(object _, KeyEventArgs e)
     {
-        if (e.Key == Key.F5)    // Test DataSource
+        if (e.Key == Key.F2)    // Emulator
+        {
+            _tcpClient.IsEmulated = !_tcpClient.IsEmulated;
+        }
+        else if (e.Key == Key.F5)    // Test DataSource
         {
 #if !USE_TCP
             Tests.Setup.IsDebugging = true;
@@ -463,13 +472,27 @@ public partial class MainWindow : Window, INotifyPropertyChanged, IDisposable
             txbOutput.Text = "";
             lblPlane.Content = "";
             lblFrameID.Content = "";
-            stpSettings.IsEnabled = false;
-            btnStartStop.Content = "Interrupt";
 
             _planeRenderer.Reset();
 #if USE_TCP
-            _tcpClient.Connect(txbHost.Text, int.Parse(txbPort.Text), Tests.Setup.IsDebugging);
+            btnStartStop.IsEnabled = false;
+
+            var exception = await _tcpClient.Connect(txbHost.Text, int.Parse(txbPort.Text), Tests.Setup.IsDebugging);
+            if (exception != null)
+            {
+                MessageBox.Show(exception.Message, Title, MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            else
+            {
+                stpSettings.IsEnabled = false;
+                btnStartStop.Content = "Interrupt";
+            }
+
+            btnStartStop.IsEnabled = true;
 #else
+            stpSettings.IsEnabled = false;
+            btnStartStop.Content = "Interrupt";
+
             _parser.Reset();
             _dataSource.Start(txbHost.Text, txbPort.Text, Tests.Setup.IsDebugging);
 #endif

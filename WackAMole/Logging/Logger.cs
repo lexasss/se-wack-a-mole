@@ -24,6 +24,8 @@ public enum SavingResult
 /// <typeparam name="T"></typeparam>
 public abstract class Logger<T> where T : class
 {
+    public string Folder => _folder;
+
     /// <summary>
     /// Saves the log with a specified file name.
     /// Shows the dilaog box to select the file location and name
