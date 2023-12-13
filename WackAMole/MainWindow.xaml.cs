@@ -384,6 +384,15 @@ public partial class MainWindow : Window, INotifyPropertyChanged, IDisposable
         {
             _tcpClient.IsEmulated = !_tcpClient.IsEmulated;
         }
+        else if (e.Key == Key.F3)    // Starts/Stops the game and interrupt logging
+        {
+            if ((WindowStyle == WindowStyle.None && _tcpClient.IsConnected) ||
+                (WindowStyle != WindowStyle.None && !_tcpClient.IsConnected))
+            {
+                FullScreen_Click(this, new RoutedEventArgs());
+                StartStop_Click(null, new RoutedEventArgs());
+            }
+        }
         else if (e.Key == Key.F5)    // Test DataSource
         {
 #if !USE_TCP

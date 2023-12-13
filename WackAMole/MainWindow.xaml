@@ -182,7 +182,13 @@
                         Padding="12px"
                         Content="Start"
                         Click="StartStop_Click"/>
-                <TextBlock>
+                <TextBlock Margin="4">
+                    <LineBreak/>
+                    <Run>Shortcuts</Run><LineBreak/>
+                    <Run>F2 - Enables/disables emulation</Run><LineBreak/>
+                    <Run>F3 - Starts/stops the game</Run>
+                </TextBlock>
+                <!--TextBlock>
                     <Run>Tests:</Run><LineBreak/>
                     <Run>F5 - DataSource</Run><LineBreak/>
                     <Run>F6 - Parser from *-socketclient2.txt</Run><LineBreak/>
@@ -190,7 +196,7 @@
                     <Run>F7 - start/stop MouseController</Run><LineBreak/>
                     <Run>F8 - GazeController (1000 samples)</Run><LineBreak/>
                     <Run>F9 - LowPassFilter from *-gazepoint.txt</Run><LineBreak/>
-                </TextBlock>
+                </TextBlock-->
                 <Label x:Name="lblDebug"
                         Content="Debug"
                         Visibility="Collapsed"
